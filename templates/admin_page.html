@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+</head>
+<body>
+    <h1>Admin Panel</h1>
+
+    <!-- Product Form -->
+    <h2>Product Form</h2>
+    <form action="{% url 'create_product' %}" method="post">
+        {% csrf_token %}
+        {{ product_form.as_p }}
+        <button type="submit">Create Product</button>
+    </form>
+
+    <!-- Product List -->
+    <h2>Product List</h2>
+    <ul>
+        {% for product in products %}
+            <li>{{ product.name }} - {{ product.price }}</li>
+        {% endfor %}
+    </ul>
+
+    <!-- Customer Form -->
+    <h2>Customer Form</h2>
+    <form action="{% url 'create_customer' %}" method="post">
+        {% csrf_token %}
+        {{ customer_form.as_p }}
+        <button type="submit">Create Customer</button>
+    </form>
+
+    <!-- Customer List -->
+    <h2>Customer List</h2>
+    <ul>
+        {% for customer in customers %}
+            <li>{{ customer.first_name }} {{ customer.last_name }} - {{ customer.email }}</li>
+        {% endfor %}
+    </ul>
+
+    <!-- Sale Form -->
+    <h2>Sale Form</h2>
+    <form action="{% url 'create_sale' %}" method="post">
+        {% csrf_token %}
+        {{ sale_form.as_p }}
+        <button type="submit">Create Sale</button>
+    </form>
+
+    <!-- Sale List -->
+    <h2>Sale List</h2>
+    <ul>
+        {% for sale in sales %}
+            <li>Sale {{ sale.id }} - {{ sale.sale_date }}</li>
+        {% endfor %}
+    </ul>
+
+    <!-- SaleProduct Form -->
+    <h2>SaleProduct Form</h2>
+    <form action="{% url 'create_sale_product' %}" method="post">
+        {% csrf_token %}
+        {{ sale_product_form.as_p }}
+        <button type="submit">Create SaleProduct</button>
+    </form>
+
+    <!-- SaleProduct List -->
+    <h2>SaleProduct List</h2>
+    <ul>
+        {% for sale_product in sale_products %}
+            <li>{{ sale_product.product }} - {{ sale_product.quantity }}</li>
+        {% endfor %}
+    </ul>
+
+    <!-- CustomerAddress Form -->
+    <h2>CustomerAddress Form</h2>
+    <form action="{% url 'create_customer_address' %}" method="post">
+        {% csrf_token %}
+        {{ customer_address_form.as_p }}
+        <button type="submit">Create CustomerAddress</button>
+    </form>
+
+    <!-- CustomerAddress List -->
+    <h2>CustomerAddress List</h2>
+    <ul>
+        {% for customer_address in customer_addresses %}
+            <li>{{ customer_address.address_line_1 }}, {{ customer_address.city }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
