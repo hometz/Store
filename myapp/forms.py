@@ -3,30 +3,13 @@ from .models import Product, Customer, Sale, SaleProduct, CustomerAddress
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 
-class ProductForm(forms.ModelForm):
-    class Meta:
-        model = Product
-        fields = '__all__'
+class ProductEdit(forms.Form):
+    name = forms.CharField(max_length=100)
+    price = forms.DecimalField(max_digits=10, decimal_places=2)
+    unit = forms.ChoiceField(choices=Product.UNIT_CHOICES)
 
-class CustomerForm(forms.ModelForm):
-    class Meta:
-        model = Customer
-        fields = '__all__'
-
-class SaleForm(forms.ModelForm):
-    class Meta:
-        model = Sale
-        fields = '__all__'
-
-class SaleProductForm(forms.ModelForm):
-    class Meta:
-        model = SaleProduct
-        fields = '__all__'
-
-class CustomerAddressForm(forms.ModelForm):
-    class Meta:
-        model = CustomerAddress
-        fields = '__all__'
+class SaleProductForm(forms.Form):
+    quantity = forms.IntegerField(min_value=1, max_value=1000, label='Количество товара')
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True)

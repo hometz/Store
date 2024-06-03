@@ -32,29 +32,11 @@ urlpatterns = [
     path('register/', views.register_view, name='register'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
-    path('panel/', views.admin_page, name='admin_page'),
-
-    path('product/create/', views.create_product, name='create_product'),
-    path('product/<int:pk>/', views.product_detail, name='product_detail'),
-    path('product/<int:pk>/update/', views.update_product, name='update_product'),
-    path('product/<int:pk>/delete/', views.delete_product, name='delete_product'),
-    path('product/list/', views.product_list, name='product_list'),
-
-    # URL-шаблоны для клиентов
-    path('customer/create/', views.create_customer, name='create_customer'),
-    path('customer/<int:pk>/', views.customer_detail, name='customer_detail'),
-    path('customer/<int:pk>/update/', views.update_customer, name='update_customer'),
-    path('customer/<int:pk>/delete/', views.delete_customer, name='delete_customer'),
-    path('customer/list/', views.customer_list, name='customer_list'),
-
-    # URL-шаблоны для продаж
-    path('sale/create/', views.create_sale, name='create_sale'),
-    path('sale/<int:pk>/', views.sale_detail, name='sale_detail'),
-    path('sale/<int:pk>/update/', views.update_sale, name='update_sale'),
-    path('sale/<int:pk>/delete/', views.delete_sale, name='delete_sale'),
-    path('sale/list/', views.sale_list, name='sale_list'),
-    path('saleproduct/create/', views.create_sale_product, name='create_sale_product'),
-    path('customeraddress/create/', views.create_customer_address, name='create_customer_address'),
+    path('products/', views.product_list, name='products_list'),
+    path('products/edit/<int:pk>', views.edit_product, name='edit_product'),
+    path('products/delete/<int:pk>/', views.delete_product, name='delete_product'),
+    path('products/create/', views.create_product, name='create_product'),
+    path('buy_product/<int:product_id>/', views.buy_product, name='buy_product'),
 ]
 
 if settings.DEBUG:

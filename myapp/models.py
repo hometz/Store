@@ -4,6 +4,7 @@ from django.db import models
 
 # Модель Товара
 class Product(models.Model):
+    
     UNIT_CHOICES = [
         ('pcs', 'Штуки'),
         ('kg', 'Килограммы'),
@@ -12,7 +13,7 @@ class Product(models.Model):
     
     name = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    unit = models.CharField(max_length=3, choices=UNIT_CHOICES)
+    unit = models.CharField(max_length=3, choices=UNIT_CHOICES, default='pcs')
 
     def __str__(self):
         return self.name

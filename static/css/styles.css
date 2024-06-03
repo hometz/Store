@@ -1,5 +1,3 @@
-/* Существующий CSS */
-
 .body {
     font-family: Montserrat, sans-serif;
 }
@@ -10,23 +8,25 @@
 .navbar {
     display: flex;
     justify-content: space-between;
-    align-items: center; /* Выравнивание по вертикали по центру */
+    align-items: center;
     overflow: hidden;
-    background-color: #333333;
-    
+    background-color: #333333;  
+}
+   
+.navbar span {
+    color: #8e8e8e
 }
 
 .left-items {
-    display: flex; /* Для того чтобы элементы внутри left-items выравнивались горизонтально */
+    display: flex;
 }
 
 .user-info {
-    text-align: right; /* Выравниваем текст внутри user-info справа */
+    text-align: right;
 }
 
-
 .user-info span {
-    margin-right: 10px; /* Отступ между span и ссылкой на выход */
+    margin-right: 10px; 
 }
   
 .navbar a {

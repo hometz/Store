@@ -11,6 +11,25 @@
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
+    <div class="navbar">
+        <div class="left-items">
+            <a href="#" id="latest" class="tab">Последнее</a>
+            <a href="#" id="about" class="tab">О нас</a>
+            <a href="#" id="news" class="tab">Новости</a>
+            <a href="#" id="faq" class="tab">FAQ</a>
+            <a href="#" id="contacts" class="tab">Контакты</a>
+            <a href="#" id="products" class="tab">Товары</a>
+        </div>
+        {% if user.is_authenticated %}
+        <div class="sp">
+            <span>Привет, {{ user.username }}!</span>
+            <a href="/logout">Выйти</a>
+        </div>
+        {% else %}
+            <a href="/login">Войти</a>
+        {% endif %}
+    </div>
+
     <div class="container">
         <h1>{{ article.title }}</h1>
         <div class="article-summary">
@@ -19,5 +38,7 @@
             <a href="{% url 'article_list' %}">Вернуться к списку статей</a>
         </div>
     </div>
+
+    <script src="{% static 'js/navigation.js' %}"></script>
 </body>
 </html>

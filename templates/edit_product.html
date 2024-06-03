@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>О компании</title>
+    <title>Коммерческий отдел компании</title>
     <link rel="stylesheet" href="{% static "css/styles.css" %}" />
 </head>
 <body>
@@ -15,7 +15,7 @@
 <div class="navbar">
     <div class="left-items">
         <a href="#" id="latest" class="tab">Последнее</a>
-        <a href="#" id="about" class="tab active">О нас</a>
+        <a href="#" id="about" class="tab">О нас</a>
         <a href="#" id="news" class="tab">Новости</a>
         <a href="#" id="faq" class="tab">FAQ</a>
         <a href="#" id="contacts" class="tab">Контакты</a>
@@ -32,16 +32,17 @@
 </div>
 
 <div class="container">
-    <h1>О компании</h1>
-    <div class="about-company">
-        <h2>Информация о компании</h2>
-        <p>Наша компания специализируется на продаже различных товаров через Интернет. Мы предлагаем широкий ассортимент продукции, включая товары для дома, электронику, одежду и многое другое. Мы стремимся предоставить нашим клиентам качественные товары по доступным ценам.</p>
-        <h2>Логотип</h2>
-        <p>*** Логотип компании будет здесь ***</p>
-        <h2>История по годам</h2>
-        <p>*** История компании по годам будет здесь ***</p>
-        <h2>Реквизиты</h2>
-        <p>*** Реквизиты компании будут здесь ***</p>
+    <div class="form-container">
+        <h1>Редактировать продукт</h1>
+        <form method="post" action="">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Сохранить</button>
+        </form>
+        <form method="post" action="{% url 'delete_product' product.pk %}">
+            {% csrf_token %}
+            <button type="submit">Удалить</button>
+        </form>
     </div>
 </div>
 

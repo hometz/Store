@@ -1,216 +1,72 @@
 # myapp/views.py
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Product, Customer, Sale, SaleProduct, CustomerAddress, Article, FAQ, Employee
-from .forms import ProductForm, CustomerForm, SaleForm, SaleProductForm, CustomerAddressForm
+#from .forms import 
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import AuthenticationForm
-from .forms import CustomUserCreationForm
-from django.http import HttpResponseForbidden
+from .forms import CustomUserCreationForm, ProductEdit, SaleProductForm
+from django.utils import timezone
 
-# Представления для модели Product
-# Create
-def create_product(request):
-    if request.method == 'POST':
-        form = ProductForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('product_list')
-    else:
-        form = ProductForm()
-    return render(request, 'myapp/product_form.html', {'form': form})
-
-# Read
 def product_list(request):
     products = Product.objects.all()
-    return render(request, 'myapp/product_list.html', {'products': products})
+    return render(request, 'product_list.html', {'products': products, 'user': request.user})
 
-def product_detail(request, pk):
-    product = get_object_or_404(Product, pk=pk)
-    return render(request, 'myapp/product_detail.html', {'product': product})
-
-# Update
-def update_product(request, pk):
-    product = get_object_or_404(Product, pk=pk)
+def create_product(request):
     if request.method == 'POST':
-        form = ProductForm(request.POST, instance=product)
+        form = ProductEdit(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('product_detail', pk=pk)
+            product = Product(
+                name=form.cleaned_data['name'],
+                price=form.cleaned_data['price'],
+                unit=form.cleaned_data['unit']
+            )
+            product.save()
+            return redirect('products_list')
     else:
-        form = ProductForm(instance=product)
-    return render(request, 'myapp/product_form.html', {'form': form})
+        form = ProductEdit()
+    return render(request, 'create_product.html', {'form': form})
 
-# Delete
+def edit_product(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    if request.method == "POST":
+        form = ProductEdit(request.POST)
+        if form.is_valid():
+            product.name = form.cleaned_data['name']
+            product.price = form.cleaned_data['price']
+            product.unit = form.cleaned_data['unit']
+            product.save()
+            return redirect('products_list')
+    else:
+        form = ProductEdit(initial={'name': product.name, 'price': product.price})
+    return render(request, 'edit_product.html', {'form': form, 'product': product})
+
 def delete_product(request, pk):
     product = get_object_or_404(Product, pk=pk)
-    if request.method == 'POST':
+    if request.method == "POST":
         product.delete()
-        return redirect('product_list')
-    return render(request, 'myapp/product_confirm_delete.html', {'product': product})
+        return redirect('products_list')
 
-# Представления для модели Customer
-# Create
-def create_customer(request):
-    if request.method == 'POST':
-        form = CustomerForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('customer_list')
-    else:
-        form = CustomerForm()
-    return render(request, 'myapp/customer_form.html', {'form': form})
-
-# Read
-def customer_list(request):
-    customers = Customer.objects.all()
-    return render(request, 'myapp/customer_list.html', {'customers': customers})
-
-def customer_detail(request, pk):
-    customer = get_object_or_404(Customer, pk=pk)
-    return render(request, 'myapp/customer_detail.html', {'customer': customer})
-
-# Update
-def update_customer(request, pk):
-    customer = get_object_or_404(Customer, pk=pk)
-    if request.method == 'POST':
-        form = CustomerForm(request.POST, instance=customer)
-        if form.is_valid():
-            form.save()
-            return redirect('customer_detail', pk=pk)
-    else:
-        form = CustomerForm(instance=customer)
-    return render(request, 'myapp/customer_form.html', {'form': form})
-
-# Delete
-def delete_customer(request, pk):
-    customer = get_object_or_404(Customer, pk=pk)
-    if request.method == 'POST':
-        customer.delete()
-        return redirect('customer_list')
-    return render(request, 'myapp/customer_confirm_delete.html', {'customer': customer})
-
-# Представления для модели Sale
-# Create
-def create_sale(request):
-    if request.method == 'POST':
-        form = SaleForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('sale_list')
-    else:
-        form = SaleForm()
-    return render(request, 'myapp/sale_form.html', {'form': form})
-
-# Read
-def sale_list(request):
-    sales = Sale.objects.all()
-    return render(request, 'myapp/sale_list.html', {'sales': sales})
-
-def sale_detail(request, pk):
-    sale = get_object_or_404(Sale, pk=pk)
-    return render(request, 'myapp/sale_detail.html', {'sale': sale})
-
-# Update
-def update_sale(request, pk):
-    sale = get_object_or_404(Sale, pk=pk)
-    if request.method == 'POST':
-        form = SaleForm(request.POST, instance=sale)
-        if form.is_valid():
-            form.save()
-            return redirect('sale_detail', pk=pk)
-    else:
-        form = SaleForm(instance=sale)
-    return render(request, 'myapp/sale_form.html', {'form': form})
-
-# Delete
-def delete_sale(request, pk):
-    sale = get_object_or_404(Sale, pk=pk)
-    if request.method == 'POST':
-        sale.delete()
-        return redirect('sale_list')
-    return render(request, 'myapp/sale_confirm_delete.html', {'sale': sale})
-
-# Представления для модели SaleProduct
-# Create
-def create_sale_product(request):
+def buy_product(request, pk):
+    product = get_object_or_404(Product, pk=pk)
     if request.method == 'POST':
         form = SaleProductForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('sale_product_list')
+            quantity = form.cleaned_data['quantity']
+            sale_product = SaleProduct.objects.create(product=product, quantity=quantity)
+            
+            customer = request.user.customer
+            sale, created = Sale.objects.get_or_create(customer=customer)
+            
+            sale.sale_date = timezone.now()
+            sale.delivery_date = sale.sale_date + timezone.timedelta(days=7)
+            sale.save()
+            
+            sale.products.add(sale_product)
+            return redirect('products_list')
     else:
         form = SaleProductForm()
-    return render(request, 'myapp/sale_product_form.html', {'form': form})
+    return render(request, 'buy_product.html', {'form': form, 'product': product})
 
-# Read
-def sale_product_list(request):
-    sale_products = SaleProduct.objects.all()
-    return render(request, 'myapp/sale_product_list.html', {'sale_products': sale_products})
-
-def sale_product_detail(request, pk):
-    sale_product = get_object_or_404(SaleProduct, pk=pk)
-    return render(request, 'myapp/sale_product_detail.html', {'sale_product': sale_product})
-
-# Update
-def update_sale_product(request, pk):
-    sale_product = get_object_or_404(SaleProduct, pk=pk)
-    if request.method == 'POST':
-        form = SaleProductForm(request.POST, instance=sale_product)
-        if form.is_valid():
-            form.save()
-            return redirect('sale_product_detail', pk=pk)
-    else:
-        form = SaleProductForm(instance=sale_product)
-    return render(request, 'myapp/sale_product_form.html', {'form': form})
-
-# Delete
-def delete_sale_product(request, pk):
-    sale_product = get_object_or_404(SaleProduct, pk=pk)
-    if request.method == 'POST':
-        sale_product.delete()
-        return redirect('sale_product_list')
-    return render(request, 'myapp/sale_product_confirm_delete.html', {'sale_product': sale_product})
-
-# Представления для модели CustomerAddress
-# Create
-def create_customer_address(request):
-    if request.method == 'POST':
-        form = CustomerAddressForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('customer_address_list')
-    else:
-        form = CustomerAddressForm()
-    return render(request, 'myapp/customer_address_form.html', {'form': form})
-
-# Read
-def customer_address_list(request):
-    customer_addresses = CustomerAddress.objects.all()
-    return render(request, 'myapp/customer_address_list.html', {'customer_addresses': customer_addresses})
-
-def customer_address_detail(request, pk):
-    customer_address = get_object_or_404(CustomerAddress, pk=pk)
-    return render(request, 'myapp/customer_address_detail.html', {'customer_address': customer_address})
-
-# Update
-def update_customer_address(request, pk):
-    customer_address = get_object_or_404(CustomerAddress, pk=pk)
-    if request.method == 'POST':
-        form = CustomerAddressForm(request.POST, instance=customer_address)
-        if form.is_valid():
-            form.save()
-            return redirect('customer_address_detail', pk=pk)
-    else:
-        form = CustomerAddressForm(instance=customer_address)
-    return render(request, 'myapp/customer_address_form.html', {'form': form})
-
-# Delete
-def delete_customer_address(request, pk):
-    customer_address = get_object_or_404(CustomerAddress, pk=pk)
-    if request.method == 'POST':
-        customer_address.delete()
-        return redirect('customer_address_list')
-    return render(request, 'myapp/customer_address_confirm_delete.html', {'customer_address': customer_address})
 
 def latest_article(request):
     latest_article = Article.objects.latest('publication_date')
@@ -241,7 +97,7 @@ def register_view(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('about')
+            return redirect('about_us')
     else:
         form = CustomUserCreationForm()
     return render(request, 'register.html', {'form': form})
@@ -263,17 +119,3 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect('login')
-
-def admin_required(view_func):
-    
-    def _wrapped_view(request, *args, **kwargs):
-        if not request.user.is_staff:
-            return HttpResponseForbidden()
-        return view_func(request, *args, **kwargs)
-    return _wrapped_view
-
-# Примените этот декоратор к вашим представлениям
-
-@admin_required
-def admin_page(request):
-    return render(request, 'admin_page.html')
