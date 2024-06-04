@@ -37,6 +37,9 @@ urlpatterns = [
     path('products/delete/<int:pk>/', views.delete_product, name='delete_product'),
     path('products/create/', views.create_product, name='create_product'),
     path('buy_product/<int:product_id>/', views.buy_product, name='buy_product'),
+    path('sales/', views.sale_list, name='sale_list'),
+    path('gif/', views.privacy_policy_page, name='gif'),
+    path('rand/', views.main_info, name='rand'),
 ]
 
 if settings.DEBUG:

@@ -9,13 +9,12 @@
 </head>
 <body>
 
-<h1>Создать факт продажи</h1>
-
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Сохранить</button>
-</form>
+    <h1>Купить {{ product.name }}</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Купить</button>
+    </form>
 
 </body>
 </html>

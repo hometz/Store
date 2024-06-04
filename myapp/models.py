@@ -1,6 +1,8 @@
 # myapp/models.py
 
 from django.db import models
+from django.utils import timezone
+import pytz
 
 # Модель Товара
 class Product(models.Model):
@@ -74,7 +76,7 @@ class Article(models.Model):
 class FAQ(models.Model):
     question = models.CharField(max_length=255)
     answer = models.TextField()
-    date_added = models.DateTimeField(auto_now_add=True)
+    date_added = models.DateTimeField()
 
     def __str__(self):
         return self.question

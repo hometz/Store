@@ -9,7 +9,11 @@ class ProductEdit(forms.Form):
     unit = forms.ChoiceField(choices=Product.UNIT_CHOICES)
 
 class SaleProductForm(forms.Form):
-    quantity = forms.IntegerField(min_value=1, max_value=1000, label='Количество товара')
+    first_name = forms.CharField(max_length=50)
+    last_name = forms.CharField(max_length=50)
+    email = forms.EmailField()
+    phone = forms.CharField(max_length=15)
+    quantity = forms.IntegerField(max_value=1000)
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True)

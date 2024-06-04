@@ -20,8 +20,13 @@
         <a href="#" id="faq" class="tab">FAQ</a>
         <a href="#" id="contacts" class="tab">Контакты</a>
         <a href="#" id="products" class="tab">Товары</a>
+        <a href="#" id="gif" class="tab">GIF</a>
+        <a href="#" id="rand" class="tab">Коты</a>
     </div>
     {% if user.is_authenticated %}
+        {% if user.is_staff %}
+            <a href="#" id="sales" class="tab active">Продажи</a>
+        {% endif %}
     <div class="sp">
         <span>Привет, {{ user.username }}!</span>
         <a href="/logout">Выйти</a>

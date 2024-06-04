@@ -5,7 +5,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Коммерческий отдел компании</title>
+    <link rel="stylesheet" href="{% static "css/styles.css" %}" />
 </head>
 <body>
 
@@ -16,8 +19,8 @@
         <a href="#" id="news" class="tab">Новости</a>
         <a href="#" id="faq" class="tab">FAQ</a>
         <a href="#" id="contacts" class="tab">Контакты</a>
-        <a href="#" id="products" class="tab active">Товары</a>
-        <a href="#" id="gif" class="tab">GIF</a>
+        <a href="#" id="products" class="tab">Товары</a>
+        <a href="#" id="gif" class="tab active">GIF</a>
         <a href="#" id="rand" class="tab">Коты</a>
         {% if user.is_staff %}
             <a href="#" id="sales" class="tab">Продажи</a>
@@ -34,27 +37,14 @@
 </div>
 
 <div class="container">
-    <h1>Товары</h1>
-    {% if user.is_authenticated and user.is_staff %}
-        <a href="{% url 'create_product' %}" class="button">Добавить товар</a>
+    {% if random_gif_url %}
+        <div class="random-gif" style="margin-top: 20px;">
+            <h2>Random GIF:</h2>
+            <img src="{{ random_gif_url }}" alt="Random GIF" width="200"/>
+        </div>
     {% endif %}
-    <div>
-        {% for product in products %}
-            <div class="article-summary">
-                <h2>{{ product.name }}</h2>
-                <p>Единица измерения: {{ product.get_unit_display }}</p>
-                <p>Цена: {{ product.price }}</p>
-                {% if user.is_authenticated %}
-                    <a href="{% url 'buy_product' product.pk %}" class="buy-button">Купить</a>
-                {% endif %}
-                {% if user.is_authenticated and user.is_staff %}
-                    <a href="{% url 'edit_product' product.pk %}" class="read-more">Редактировать</a>
-                {% endif %}
-            </div>
-        {% endfor %}
-    </div>
 </div>
 
-<script src="{% static 'js/navigation.js' %}"></script>
+    <script src="{% static 'js/navigation.js' %}"></script>
 </body>
 </html>

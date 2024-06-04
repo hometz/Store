@@ -1,11 +1,47 @@
-# myapp/views.py
+
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Product, Customer, Sale, SaleProduct, CustomerAddress, Article, FAQ, Employee
-#from .forms import 
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import CustomUserCreationForm, ProductEdit, SaleProductForm
+import requests
 from django.utils import timezone
+import matplotlib.pyplot as plt
+import os
+from django.db.models import Sum
+
+
+def get_random_gif():
+    api_key = 'Eio5GQwmcuMOFpcd811Iu4fvlUBVjVDN'
+    url = f'https://api.giphy.com/v1/gifs/random?api_key={api_key}&rating=g'
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        data = response.json()
+        return data['data']['images']['original']['url']
+    except requests.exceptions.RequestException as e:
+        print(f"Giphy API error: {e}")
+        return None
+    except (KeyError, ValueError) as e:
+        print(f"Error parsing Giphy API response: {e}")
+        return None
+
+
+def get_cat_fact():
+    url = 'https://catfact.ninja/fact'
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        data = response.json()
+        return data['fact']
+    except requests.exceptions.RequestException as e:
+        print(f"Cat Facts API error: {e}")
+        return None
+    except (KeyError, ValueError) as e:
+        print(f"Error parsing Cat Facts API response: {e}")
+        return None
+
+
 
 def product_list(request):
     products = Product.objects.all()
@@ -46,26 +82,65 @@ def delete_product(request, pk):
         product.delete()
         return redirect('products_list')
 
-def buy_product(request, pk):
-    product = get_object_or_404(Product, pk=pk)
+def buy_product(request, product_id):
+    product = get_object_or_404(Product, pk=product_id)
     if request.method == 'POST':
         form = SaleProductForm(request.POST)
         if form.is_valid():
+            first_name = form.cleaned_data['first_name']
+            last_name = form.cleaned_data['last_name']
+            email = form.cleaned_data['email']
+            phone = form.cleaned_data['phone']
             quantity = form.cleaned_data['quantity']
-            sale_product = SaleProduct.objects.create(product=product, quantity=quantity)
             
-            customer = request.user.customer
-            sale, created = Sale.objects.get_or_create(customer=customer)
+            customer, created = Customer.objects.get_or_create(
+                email=email,
+                defaults={'first_name': first_name, 'last_name': last_name, 'phone': phone}
+            )
             
-            sale.sale_date = timezone.now()
-            sale.delivery_date = sale.sale_date + timezone.timedelta(days=7)
-            sale.save()
+            sale = Sale.objects.create(
+                customer=customer,
+                delivery_date=timezone.now() + timezone.timedelta(days=7) 
+            )
             
-            sale.products.add(sale_product)
+            SaleProduct.objects.create(
+                sale=sale,
+                product=product,
+                quantity=quantity
+            )
+            
             return redirect('products_list')
     else:
         form = SaleProductForm()
     return render(request, 'buy_product.html', {'form': form, 'product': product})
+
+
+def sale_list(request):
+    sales = Sale.objects.all().prefetch_related('products', 'customer')
+    
+    sales_by_customer = SaleProduct.objects.values('sale__customer').annotate(total_quantity=Sum('quantity'))
+    
+    customers = []
+    total_quantity = []
+    for sale in sales_by_customer:
+        customer = Customer.objects.get(pk=sale['sale__customer'])
+        customers.append(customer)
+        total_quantity.append(sale['total_quantity'])
+    
+    customer_names = [f"{customer.first_name} {customer.last_name}" for customer in customers]
+    
+    plt.bar(range(len(customers)), total_quantity)
+    plt.xlabel('Клиент')
+    plt.ylabel('Общее количество продуктов')
+    plt.title('Статистика продаж по клиентам')
+    plt.xticks(range(len(customers)), customer_names, rotation=45, ha='right')
+    plt.tight_layout()
+    
+    chart_path = os.path.join('media', 'sale_statistics.png')
+    plt.savefig(chart_path)
+    plt.close()
+    
+    return render(request, 'sale_list.html', {'sales': sales, 'chart_path': chart_path})
 
 
 def latest_article(request):
@@ -119,3 +194,11 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect('login')
+
+def main_info(request):
+    cat_fact = get_cat_fact()
+    return render(request, 'main_info.html', {'cat_fact': cat_fact})
+
+def privacy_policy_page(request):
+    random_gif_url = get_random_gif()
+    return render(request, "gif.html", {"random_gif_url": random_gif_url})
