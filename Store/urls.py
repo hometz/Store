@@ -40,6 +40,7 @@ urlpatterns = [
     path('sales/', views.sale_list, name='sale_list'),
     path('gif/', views.privacy_policy_page, name='gif'),
     path('rand/', views.main_info, name='rand'),
+    path('product/<int:product_id>/reviews/', views.product_reviews, name='product_reviews'),
 ]
 
 if settings.DEBUG:

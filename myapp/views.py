@@ -1,14 +1,15 @@
 
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Product, Customer, Sale, SaleProduct, CustomerAddress, Article, FAQ, Employee
+from .models import Product, Customer, Sale, SaleProduct, CustomerAddress, Article, FAQ, Employee, Review, PromoCode
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import AuthenticationForm
-from .forms import CustomUserCreationForm, ProductEdit, SaleProductForm
+from .forms import CustomUserCreationForm, ProductEdit, SaleProductForm, ReviewForm
 import requests
 from django.utils import timezone
 import matplotlib.pyplot as plt
 import os
 from django.db.models import Sum
+from decimal import Decimal
 
 
 def get_random_gif():
@@ -92,7 +93,15 @@ def buy_product(request, product_id):
             email = form.cleaned_data['email']
             phone = form.cleaned_data['phone']
             quantity = form.cleaned_data['quantity']
+            promo_code = form.cleaned_data.get('promo_code')
             
+            try:
+                promo = PromoCode.objects.get(code=promo_code, active=True)
+                discount = Decimal(promo.discount_percent) / Decimal(100)
+                product.price -= product.price * discount
+            except PromoCode.DoesNotExist:
+                pass
+
             customer, created = Customer.objects.get_or_create(
                 email=email,
                 defaults={'first_name': first_name, 'last_name': last_name, 'phone': phone}
@@ -202,3 +211,23 @@ def main_info(request):
 def privacy_policy_page(request):
     random_gif_url = get_random_gif()
     return render(request, "gif.html", {"random_gif_url": random_gif_url})
+
+def product_reviews(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    reviews = Review.objects.filter(product=product)
+
+    if request.method == 'POST':
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.product = product
+            review.save()
+            return redirect('product_reviews', product_id=product_id)
+    else:
+        form = ReviewForm()
+
+    return render(request, 'product_reviews.html', {
+        'product': product,
+        'reviews': reviews,
+        'form': form
+    })

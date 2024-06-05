@@ -1,7 +1,7 @@
 # myapp/admin.py
 
 from django.contrib import admin
-from .models import Product, Customer, Sale, SaleProduct, CustomerAddress, Article, FAQ, Employee
+from .models import Product, Customer, Sale, SaleProduct, CustomerAddress, Article, FAQ, Employee, PromoCode
 from django.utils import timezone
 import pytz
 
@@ -31,3 +31,4 @@ admin.site.register(CustomerAddress)
 admin.site.register(Article)
 admin.site.register(FAQ, FAQAdmin)
 admin.site.register(Employee)
+admin.site.register(PromoCode)

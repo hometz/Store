@@ -19,6 +19,15 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+    
+class Review(models.Model):
+    product = models.ForeignKey(Product, related_name='reviews', on_delete=models.CASCADE)
+    author = models.CharField(max_length=100)
+    text = models.TextField()
+    rating = models.PositiveSmallIntegerField(default=1)
+
+    def __str__(self):
+        return f'Review for {self.product.name} by {self.author}'
 
 # Модель Клиента
 class Customer(models.Model):
@@ -91,3 +100,11 @@ class Employee(models.Model):
 
     def __str__(self):
         return self.name
+    
+class PromoCode(models.Model):
+    code = models.CharField(max_length=20, unique=True)
+    discount_percent = models.PositiveIntegerField(default=0, help_text="Процент скидки")
+    active = models.BooleanField(default=True, help_text="Активен ли промокод")
+
+    def __str__(self):
+        return self.code
