@@ -4,7 +4,6 @@ from django.db import models
 from django.utils import timezone
 import pytz
 
-# Модель Товара
 class Product(models.Model):
     
     UNIT_CHOICES = [
@@ -29,7 +28,6 @@ class Review(models.Model):
     def __str__(self):
         return f'Review for {self.product.name} by {self.author}'
 
-# Модель Клиента
 class Customer(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
@@ -39,7 +37,6 @@ class Customer(models.Model):
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 
-# Модель Продажи
 class Sale(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     products = models.ManyToManyField(Product, through='SaleProduct')
@@ -49,7 +46,6 @@ class Sale(models.Model):
     def __str__(self):
         return f"Sale {self.id} to {self.customer}"
 
-# Модель промежуточной таблицы для Sale и Product
 class SaleProduct(models.Model):
     sale = models.ForeignKey(Sale, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
@@ -58,7 +54,7 @@ class SaleProduct(models.Model):
     def __str__(self):
         return f"{self.product} - {self.quantity}"
 
-# Модель адреса для Клиента (Связь Один к Одному)
+
 class CustomerAddress(models.Model):
     customer = models.OneToOneField(Customer, on_delete=models.CASCADE, primary_key=True)
     address_line_1 = models.CharField(max_length=255)
