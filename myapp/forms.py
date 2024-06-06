@@ -11,7 +11,7 @@ class ProductEdit(forms.Form):
 class ReviewForm(forms.ModelForm):
     class Meta:
         model = Review
-        fields = ['author', 'text', 'rating']
+        fields = ['text', 'rating']
 
     def clean_rating(self):
         rating = self.cleaned_data['rating']

@@ -41,6 +41,7 @@
                     <th>Дата продажи</th>
                     <th>Дата доставки</th>
                     <th>Товары</th>
+                    <th>Итоговая цена</th>
                 </tr>
             </thead>
             <tbody>
@@ -52,10 +53,11 @@
                     <td>
                         <ul>
                             {% for sale_product in sale.saleproduct_set.all %}
-                            <li>{{ sale_product.product.name }} - {{ sale_product.quantity }} {{ sale_product.product.get_unit_display }}</li>
+                            <li>{{ sale_product.product.name }} - {{ sale_product.quantity }} {{ sale_product.product.get_unit_display }} ({{ sale_product.price }})</li>
                             {% endfor %}
                         </ul>
                     </td>
+                    <td>{{ sale.total_price }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

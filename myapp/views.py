@@ -95,13 +95,6 @@ def buy_product(request, product_id):
             quantity = form.cleaned_data['quantity']
             promo_code = form.cleaned_data.get('promo_code')
             
-            try:
-                promo = PromoCode.objects.get(code=promo_code, active=True)
-                discount = Decimal(promo.discount_percent) / Decimal(100)
-                product.price -= product.price * discount
-            except PromoCode.DoesNotExist:
-                pass
-
             customer, created = Customer.objects.get_or_create(
                 email=email,
                 defaults={'first_name': first_name, 'last_name': last_name, 'phone': phone}
@@ -112,11 +105,28 @@ def buy_product(request, product_id):
                 delivery_date=timezone.now() + timezone.timedelta(days=7) 
             )
             
+            # Применяем скидку, если указан промокод
+            discount = Decimal('0.00')
+            if promo_code:
+                try:
+                    promo = PromoCode.objects.get(code=promo_code, active=True)
+                    discount = Decimal(promo.discount_percent) / Decimal(100)
+                except PromoCode.DoesNotExist:
+                    pass
+
+            # Вычисляем цену с учетом скидки
+            price_with_discount = product.price - (product.price * discount)
+
             SaleProduct.objects.create(
                 sale=sale,
                 product=product,
-                quantity=quantity
+                quantity=quantity,
+                price=price_with_discount  # Учитываем скидку при установке цены товара
             )
+            
+            # Обновляем общую цену заказа
+            sale.total_price = price_with_discount * quantity
+            sale.save()
             
             return redirect('products_list')
     else:
@@ -221,6 +231,7 @@ def product_reviews(request, product_id):
         if form.is_valid():
             review = form.save(commit=False)
             review.product = product
+            review.author = request.user
             review.save()
             return redirect('product_reviews', product_id=product_id)
     else:

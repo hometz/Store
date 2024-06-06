@@ -134,3 +134,6 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 LOGIN_REDIRECT_URL = '/about/'
 LOGOUT_REDIRECT_URL = '/login/'
+
+TIME_ZONE = 'Europe/Moscow'
+USE_TZ = True
