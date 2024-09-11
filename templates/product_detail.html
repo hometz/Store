@@ -5,10 +5,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Коммерческий отдел компании</title>
-    <link rel="stylesheet" href="{% static "css/styles.css" %}" />
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
 </head>
 <body>
 
@@ -20,7 +17,7 @@
         <a href="#" id="faq" class="tab">FAQ</a>
         <a href="#" id="contacts" class="tab">Контакты</a>
         <a href="#" id="products" class="tab">Товары</a>
-        <a href="#" id="gif" class="tab active">GIF</a>
+        <a href="#" id="gif" class="tab">GIF</a>
         <a href="#" id="rand" class="tab">Коты</a>
         {% if user.is_staff %}
             <a href="#" id="sales" class="tab">Продажи</a>
@@ -36,15 +33,19 @@
     {% endif %}
 </div>
 
-<div class="container">
-    {% if random_gif_url %}
-        <div class="random-gif" style="margin-top: 20px;">
-            <h2>Random GIF:</h2>
-            <img src="{{ random_gif_url }}" alt="Random GIF" width="200"/>
-        </div>
-    {% endif %}
-</div>
+<h2>{{ product.name }}</h2>
+<p>Единица измерения: {{ product.get_unit_display }}</p>
+<p>Цена: {{ product.price }}</p>
+{% if user.is_authenticated and not user.is_staff %}
+    <a href="{% url 'buy_product' product.pk %}" class="buy-button">Купить</a>
+{% endif %}
+{% if user.is_authenticated %}
+    <a class="reviews_cls" href="{% url 'product_reviews' product_id=product.id %}" class="reviews-button">Отзывы</a>
+{% endif %}
+{% if user.is_authenticated and user.is_staff %}
+    <a href="{% url 'edit_product' product.pk %}" class="read-more">Редактировать</a>
+{% endif %}
 
-    <script src="{% static 'js/navigation.js' %}"></script>
+<script src="{% static 'js/navigation.js' %}"></script>
 </body>
 </html>

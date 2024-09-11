@@ -121,3 +121,17 @@
 .form-container a:hover {
     text-decoration: underline;
 }
+
+.article-summary {
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.article-summary:hover {
+    background-color: #f0f0f0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.article-summary:active {
+    background-color: #e0e0e0;
+    transform: translate(0px, 2px);
+}
