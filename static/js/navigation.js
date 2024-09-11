@@ -8,12 +8,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    console.log(window.location.href);
+
     document.querySelectorAll(".article-summary").forEach(item => {
         item.addEventListener("click", e => {
-            if (!e.target.classList.contains("edit") && !e.target.classList.contains("reviews_cls")) {
+            if (!e.target.classList.contains("edit") 
+                && !e.target.classList.contains("reviews_cls")
+                && item.classList.contains("is_prod")) {
                 const articleSummary = e.target.closest(".article-summary");
                 const productId = articleSummary.getAttribute("data-product-id");
-                console.log("Product ID:", productId); // Добавлено для отладки
                 window.location.href = `/products/${productId}/detail/`;
             }
         });

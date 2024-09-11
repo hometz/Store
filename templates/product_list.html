@@ -40,7 +40,7 @@
     {% endif %}
     <div class="product_container">
         {% for product in products %}
-            <div class="article-summary" data-product-id="{{ product.id }}">
+            <div class="article-summary is_prod" data-product-id="{{ product.id }}">
                 <h2>{{ product.name }}</h2>
                 <p>Единица измерения: {{ product.get_unit_display }}</p>
                 <p>Цена: {{ product.price }}</p>
