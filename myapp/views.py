@@ -1,6 +1,6 @@
 
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Product, Customer, Sale, SaleProduct, CustomerAddress, Article, FAQ, Employee, Review, PromoCode
+from .models import Product, Customer, Sale, SaleProduct, CustomerAddress, Article, FAQ, Employee, Review, PromoCode, Cart, CartProduct
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import CustomUserCreationForm, ProductEdit, SaleProductForm, ReviewForm
@@ -246,3 +246,22 @@ def product_reviews(request, product_id):
         'reviews': reviews,
         'form': form
     })
+
+def cart_view(request):
+    cart, created = Cart.objects.get_or_create(user=request.user)
+    cart_products = CartProduct.objects.filter(cart=cart)
+    total_price = sum([cp.product.price * cp.quantity for cp in cart_products])
+
+    return render(request, 'cart.html', {'cart_products': cart_products, 'total_price': total_price})
+
+def add_to_cart(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    cart, created = Cart.objects.get_or_create(user=request.user)
+    cart_product, created = CartProduct.objects.get_or_create(cart=cart, product=product)
+
+    if request.method == "POST":
+        quantity = int(request.POST.get('quantity', 1))
+        cart_product.quantity += quantity
+        cart_product.save()
+
+    return redirect('cart_view')

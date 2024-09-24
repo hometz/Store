@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 
 class Product(models.Model):
     
-    UNIT_CHOICES = [
+    UNIT_CHOICES: list[tuple[str, str]] = [
         ('pcs', 'Штуки'),
         ('kg', 'Килограммы'),
         ('l', 'Литры'),
@@ -106,3 +106,18 @@ class PromoCode(models.Model):
 
     def __str__(self):
         return self.code
+    
+class Cart(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    products = models.ManyToManyField(Product, through='CartProduct')
+
+    def __str__(self):
+        return f"Cart for {self.user.username}"
+
+class CartProduct(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+
+    def __str__(self):
+        return f"{self.quantity} of {self.product.name} in cart"

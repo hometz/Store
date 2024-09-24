@@ -41,7 +41,8 @@ urlpatterns = [
     path('gif/', views.privacy_policy_page, name='gif'),
     path('rand/', views.main_info, name='rand'),
     path('product/<int:product_id>/reviews/', views.product_reviews, name='product_reviews'),
-    path('products/<int:product_id>/detail/', views.product_detail, name='product_detail')
+    path('products/<int:product_id>/detail/', views.product_detail, name='product_detail'),
+    path('cart/', views.cart_view, name='cart_view')
 ]
 
 if settings.DEBUG:

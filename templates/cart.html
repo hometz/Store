@@ -20,7 +20,7 @@
         <a href="#" id="faq" class="tab">FAQ</a>
         <a href="#" id="contacts" class="tab">Контакты</a>
         <a href="#" id="products" class="tab">Товары</a>
-        <a href="#" id="gif" class="tab active">GIF</a>
+        <a href="#" id="gif" class="tab">GIF</a>
         <a href="#" id="rand" class="tab">Коты</a>
         {% if user.is_staff %}
             <a href="#" id="sales" class="tab">Продажи</a>
@@ -39,15 +39,21 @@
         <a href="/login">Войти</a>
     {% endif %}
 </div>
+    <h1>Ваша корзина</h1>
 
-<div class="container">
-    {% if random_gif_url %}
-        <div class="random-gif" style="margin-top: 20px;">
-            <h2>Random GIF:</h2>
-            <img src="{{ random_gif_url }}" alt="Random GIF" width="200"/>
-        </div>
-    {% endif %}
-</div>
+    <ul>
+        {% for cp in cart_products %}
+        <li>
+            {{ cp.product.name }} - {{ cp.quantity }} x {{ cp.product.price }} руб. = {{ cp.quantity|floatformat:2 }} x {{ cp.product.price|floatformat:2 }} руб.
+        </li>
+        {% empty %}
+        <li>Корзина пуста</li>
+        {% endfor %}
+    </ul>
+
+    <hr>
+
+    <h3>Общая стоимость: {{ total_price|floatformat:2 }} руб.</h3>
 
     <script src="{% static 'js/navigation.js' %}"></script>
 </body>

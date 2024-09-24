@@ -27,6 +27,10 @@
         {% if user.is_staff %}
             <a href="#" id="sales" class="tab active">Продажи</a>
         {% endif %}
+
+        {% if not user.is_staff %}
+            <a href="#" id="cart" class="tab active">Корзина</a>
+        {% endif %}
     <div class="sp">
         <span>Привет, {{ user.username }}!</span>
         <a href="/logout">Выйти</a>
