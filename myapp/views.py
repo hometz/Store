@@ -92,23 +92,12 @@ def buy_product(request, product_id):
     if request.method == 'POST':
         form = SaleProductForm(request.POST)
         if form.is_valid():
-            first_name = form.cleaned_data['first_name']
-            last_name = form.cleaned_data['last_name']
-            email = form.cleaned_data['email']
-            phone = form.cleaned_data['phone']
             quantity = form.cleaned_data['quantity']
             promo_code = form.cleaned_data.get('promo_code')
-            
-            customer, created = Customer.objects.get_or_create(
-                email=email,
-                defaults={'first_name': first_name, 'last_name': last_name, 'phone': phone}
-            )
-            
-            sale = Sale.objects.create(
-                customer=customer,
-                delivery_date=timezone.now() + timezone.timedelta(days=7) 
-            )
-            
+
+            cart, created = Cart.objects.get_or_create(user=request.user)
+            cart_product, created = CartProduct.objects.get_or_create(cart=cart, product=product)
+
             # Применяем скидку, если указан промокод
             discount = Decimal('0.00')
             if promo_code:
@@ -121,21 +110,41 @@ def buy_product(request, product_id):
             # Вычисляем цену с учетом скидки
             price_with_discount = product.price - (product.price * discount)
 
-            SaleProduct.objects.create(
-                sale=sale,
-                product=product,
-                quantity=quantity,
-                price=price_with_discount  # Учитываем скидку при установке цены товара
-            )
-            
-            # Обновляем общую цену заказа
-            sale.total_price = price_with_discount * quantity
-            sale.save()
-            
-            return redirect('products_list')
+            cart_product.quantity += quantity
+            cart_product.price = price_with_discount  # Учитываем скидку при установке цены товара
+            cart_product.save()
+
+            return redirect('cart_view')
     else:
         form = SaleProductForm()
+
     return render(request, 'buy_product.html', {'form': form, 'product': product})
+
+def checkout(request):
+    cart, created = Cart.objects.get_or_create(user=request.user)
+    cart_products = CartProduct.objects.filter(cart=cart)
+    total_price = sum([cp.product.price * cp.quantity for cp in cart_products])
+
+    if request.method == 'POST':
+        customer = request.user.customer
+        sale = Sale.objects.create(
+            customer=customer,
+            delivery_date=timezone.now() + timezone.timedelta(days=7),
+            total_price=total_price
+        )
+
+        for cart_product in cart_products:
+            SaleProduct.objects.create(
+                sale=sale,
+                product=cart_product.product,
+                quantity=cart_product.quantity,
+                price=cart_product.product.price
+            )
+            cart_product.delete()
+
+        return redirect('order_success')
+
+    return render(request, 'checkout.html', {'cart_products': cart_products, 'total_price': total_price})
 
 
 def sale_list(request):
