@@ -261,15 +261,25 @@ def cart_view(request):
     cart_products = CartProduct.objects.filter(cart=cart)
     total_price = sum([cp.product.price * cp.quantity for cp in cart_products])
 
+    if request.method == 'POST':
+        cart_product_id = request.POST.get('cart_product_id')
+        new_quantity = int(request.POST.get('quantity'))
+        cart_product = CartProduct.objects.get(id=cart_product_id)
+        if new_quantity > 0:
+            cart_product.quantity = new_quantity
+            cart_product.save()
+        return redirect('cart_view')
+
     return render(request, 'cart.html', {'cart_products': cart_products, 'total_price': total_price})
 
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     cart, created = Cart.objects.get_or_create(user=request.user)
-    cart_product, created = CartProduct.objects.get_or_create(cart=cart, product=product)
+    cart_product, created = CartProduct.objects.get_or_create(cart=cart, product=product, defaults={'quantity': 0})
 
     if request.method == "POST":
         quantity = int(request.POST.get('quantity', 1))
+
         cart_product.quantity += quantity
         cart_product.save()
 

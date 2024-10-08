@@ -42,7 +42,8 @@ urlpatterns = [
     path('rand/', views.main_info, name='rand'),
     path('product/<int:product_id>/reviews/', views.product_reviews, name='product_reviews'),
     path('products/<int:product_id>/detail/', views.product_detail, name='product_detail'),
-    path('cart/', views.cart_view, name='cart_view')
+    path('cart/', views.cart_view, name='cart_view'),
+    path('cart/add/<int:product_id>/', views.add_to_cart, name='add_to_cart')
 ]
 
 if settings.DEBUG:

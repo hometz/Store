@@ -39,22 +39,32 @@
         <a href="/login">Войти</a>
     {% endif %}
 </div>
-    <h1>Ваша корзина</h1>
 
-    <ul>
-        {% for cp in cart_products %}
-        <li>
-            {{ cp.product.name }} - {{ cp.quantity }} x {{ cp.product.price }} руб. = {{ cp.quantity|floatformat:2 }} x {{ cp.product.price|floatformat:2 }} руб.
-        </li>
-        {% empty %}
-        <li>Корзина пуста</li>
-        {% endfor %}
-    </ul>
+<h1>Ваша корзина</h1>
 
-    <hr>
+<ul>
+    {% for cp in cart_products %}
+    <li>
+        {{ cp.product.name }} - 
+        <form method="post" action="{% url 'cart_view' %}" style="display: inline;">
+            {% csrf_token %}
+            <input type="number" name="quantity" value="{{ cp.quantity }}" min="1">
+            <input type="hidden" name="cart_product_id" value="{{ cp.id }}">
+            <button type="submit">Обновить</button>
+        </form>
+        x {{ cp.product.price|floatformat:2 }} руб. = 
+        {{ cp.quantity|floatformat:2 }} x {{ cp.product.price|floatformat:2 }} руб.
+        <a href="{% url 'buy_product' cp.product.id %}" class="btn btn-primary">Оплатить</a>
+    </li>
+    {% empty %}
+    <li>Корзина пуста</li>
+    {% endfor %}
+</ul>
 
-    <h3>Общая стоимость: {{ total_price|floatformat:2 }} руб.</h3>
+<hr>
 
-    <script src="{% static 'js/navigation.js' %}"></script>
+<h3>Общая стоимость: {{ total_price|floatformat:2 }} руб.</h3>
+
+<script src="{% static 'js/navigation.js' %}"></script>
 </body>
 </html>
