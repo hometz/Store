@@ -1,65 +1,24 @@
-<!DOCTYPE html>
-{% load static %}
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    <title>Product Page</title>
-</head>
-<body>
-
-<div class="navbar">
-    <div class="left-items">
-        <a href="#" id="latest" class="tab">Главная</a>
-        <a href="#" id="about" class="tab">О нас</a>
-        <a href="#" id="news" class="tab">Новости</a>
-        <a href="#" id="faq" class="tab">FAQ</a>
-        <a href="#" id="contacts" class="tab">Контакты</a>
-        <a href="#" id="products" class="tab">Товары</a>
-        <a href="#" id="gif" class="tab">GIF</a>
-        <a href="#" id="rand" class="tab">Коты</a>
-        {% if user.is_staff %}
-            <a href="#" id="sales" class="tab">Продажи</a>
-        {% endif %}
-
+{% extends "base.html" %}
+{% block title %}Информация о товаре{% endblock %}
+{% block content %}
+    <div class="container">
+        <h2>{{ product.name }}</h2>
+        <p>Единица измерения: {{ product.get_unit_display }}</p>
+        <p>Цена: {{ product.price }}</p>
         {% if user.is_authenticated and not user.is_staff %}
-            <a href="#" id="cart" class="tab">Корзина</a>
+        <form method="POST" action="{% url 'add_to_cart' product.id %}">
+            {% csrf_token %}
+            <label for="quantity">Количество:</label>
+            <input type="number" id="quantity" name="quantity" value="1" min="1" required>  
+            <button type="submit" class="buy-button">Добавить в корзину</button>
+        </form>
+        {% endif %}
+        {% if user.is_authenticated %}
+            <a class="reviews_cls" href="{% url 'product_reviews' product_id=product.id %}" class="reviews-button">Отзывы</a>
+        {% endif %}
+        {% if user.is_authenticated and user.is_staff %}
+            <a href="{% url 'edit_product' product.pk %}" class="read-more">Редактировать</a>
         {% endif %}
     </div>
-    {% if user.is_authenticated %}
-    <div class="user-info">
-        <span>Привет, {{ user.username }}!</span>
-        <a href="/logout">Выйти</a>
-    </div>
-    {% else %}
-        <a href="/login">Войти</a>
-    {% endif %}
-</div>
+{% endblock %}
 
-<div class="container">
-    <h2>{{ product.name }}</h2>
-    <p>Единица измерения: {{ product.get_unit_display }}</p>
-    <p>Цена: {{ product.price }}</p>
-    {% if user.is_authenticated and not user.is_staff %}
-    <form method="POST" action="{% url 'add_to_cart' product.id %}">
-        {% csrf_token %}
-        <label for="quantity">Количество:</label>
-        <input type="number" id="quantity" name="quantity" value="1" min="1" required>  
-        <button type="submit" class="buy-button">Добавить в корзину</button>
-    </form>
-    {% endif %}
-    {% if user.is_authenticated %}
-        <a class="reviews_cls" href="{% url 'product_reviews' product_id=product.id %}" class="reviews-button">Отзывы</a>
-    {% endif %}
-    {% if user.is_authenticated and user.is_staff %}
-        <a href="{% url 'edit_product' product.pk %}" class="read-more">Редактировать</a>
-    {% endif %}
-</div>
-
-<script src="{% static 'js/navigation.js' %}"></script>
-</body>
-</html>

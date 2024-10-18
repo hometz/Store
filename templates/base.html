@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Коммерческий отдел компании предоставляет товары и услуги. Узнайте больше о нас, новостях, партнерах и наших предложениях.">
+    <meta name="keywords" content="коммерция, товары, услуги, партнеры, продажи">
+    <meta name="author" content="Коммерческий отдел компании">
+
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static "css/styles.css" %}" />
+</head>
+<body>
+
+<header>
+    <nav class="navbar">
+        <div class="left-items">
+            <img src="{% static 'images/Tesnina.png' %}" class="navbar-icon" width="40" height="40" tabindex="0">
+            <a href="#" id="latest" class="tab" tabindex="1">Главная</a>
+            <a href="#" id="about" class="tab" tabindex="2">О нас</a>
+            <a href="#" id="news" class="tab" tabindex="3">Новости</a>
+            <a href="#" id="faq" class="tab" tabindex="4">FAQ</a>
+            <a href="#" id="contacts" class="tab" tabindex="5">Контакты</a>
+            <a href="#" id="products" class="tab" tabindex="6">Товары</a>
+            {% if user.is_staff %}
+                <a href="#" id="sales" class="tab" tabindex="7">Продажи</a>
+            {% endif %}
+            {% if user.is_authenticated and not user.is_staff %}
+                <a href="#" id="cart" class="tab" tabindex="8">Корзина</a>
+            {% endif %}
+        </div>
+    
+        {% if user.is_authenticated %}
+        <div class="user-info">
+            <span>Привет, {{ user.username }}!</span>
+            <a href="/logout">Выйти</a>
+        </div>
+        {% else %}
+            <a href="/login">Войти</a>
+        {% endif %}
+    </nav>
+</header>
+
+<main>
+    {% block content %}{% endblock %}
+</main>
+
+<footer>
+    <section class="footer-container">
+        <article class="partners">
+            <h2>Наши партнеры</h2>
+            <div class="partner-logos">
+                <a target="_blank" href="https://svyatoyistochnik.com/">
+                    <img src="{% static 'images/saint.jpg' %}" alt="Святой Источник" width="100">
+                </a>
+                <a target="_blank" href="https://coca-cola.by/">
+                    <img src="{% static 'images/coke.jpg' %}" alt="Coca Cola" width="100">
+                </a>
+                <a target="_blank" href="https://market.yandex.ru/">
+                    <img src="{% static 'images/market.png' %}" alt="Яндекс Маркет" width="100">
+                </a>
+            </div>
+        </article>
+
+        <article class="ads">
+            <h2>Рекламные баннеры</h2>
+            <div class="ad-banners">
+                <img src="{% static 'images/ads.jpg' %}" alt="Рекламный баннер" width="100">
+            </div>
+        </article>
+    </section>
+</footer>
+
+<script src="{% static 'js/navigation.js' %}"></script>
+
+</body>
+</html>

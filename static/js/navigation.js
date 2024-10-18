@@ -1,14 +1,24 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const navbar = document.querySelector(".navbar");
 
-    navbar.addEventListener("click", e => {
-        if (e.target.classList.contains("tab")) {
-            e.preventDefault();
-            window.location.href = `/${e.target.id}` 
+function SetActive(currTab) {
+    currTab.classList.add("active");
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const tabs = document.querySelectorAll(".tab");
+    const currentPath = window.location.pathname;
+
+    tabs.forEach(tab => {
+        if (`/${tab.id}/` === currentPath) {
+            SetActive(tab);
         }
     });
 
-    console.log(window.location.href);
+    tabs.forEach(e => {
+        e.addEventListener("click", event => {
+            event.preventDefault();
+            window.location.href = `/${event.target.id}`;
+        });
+    });
 
     document.querySelectorAll(".article-summary").forEach(item => {
         item.addEventListener("click", e => {

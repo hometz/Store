@@ -1,70 +1,195 @@
-<!DOCTYPE html>
+{% extends "base.html" %}
+{% block title %}FAQ{% endblock %}
+{% block content %}
 {% load static %}
-<html lang="en">
-<head>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FAQ List</title>
-    <link rel="stylesheet" href="{% static "css/styles.css" %}">
-</head>
-<body class="body">
-    <div class="navbar">
-        <div class="left-items">
-            <a href="#" id="latest" class="tab">Главная</a>
-            <a href="#" id="about" class="tab">О нас</a>
-            <a href="#" id="news" class="tab">Новости</a>
-            <a href="#" id="faq" class="tab active">FAQ</a>
-            <a href="#" id="contacts" class="tab">Контакты</a>
-            <a href="#" id="products" class="tab">Товары</a>
-            <a href="#" id="gif" class="tab">GIF</a>
-            <a href="#" id="rand" class="tab">Коты</a>
-            {% if user.is_staff %}
-                <a href="#" id="sales" class="tab">Продажи</a>
-            {% endif %}
-
-            {% if user.is_authenticated and not user.is_staff %}
-                <a href="#" id="cart" class="tab">Корзина</a>
-            {% endif %}
-        </div>
-        {% if user.is_authenticated %}
-        <div class="sp">
-            <span>Привет, {{ user.username }}!</span>
-            <a href="/logout">Выйти</a>
-        </div>
-        {% else %}
-            <a href="/login">Войти</a>
-        {% endif %}
-    </div>
-
-    <div class="container">
-        <h1>Словарь терминов и понятий</h1>
+    <div class="container" itemscope itemtype="http://schema.org/FAQPage">
+        <h1 itemprop="name">Словарь терминов и понятий</h1>
         <h2>Список часто задаваемых вопросов и ответов на них</h2>
         
-        <div class="article-summary">
-            <table class="table" border="1">
-                <thead>
-                    <tr>
-                        <th>Вопрос</th>
-                        <th>Ответ</th>
-                        <th>Дата добавления</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for faq in faqs %}
-                    <tr>
-                        <td>{{ faq.question }}</td>
-                        <td>{{ faq.answer }}</td>
-                        <td>{{ faq.date_added }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <div class="faq-list">
+            {% for faq in faqs %}
+            <details itemscope itemprop="mainEntity" itemtype="http://schema.org/Question">
+                <summary itemprop="name">{{ faq.question }}</summary>
+                <p itemprop="acceptedAnswer" itemscope itemtype="http://schema.org/Answer">
+                    <span itemprop="text">{{ faq.answer }}</span>
+                    <small>Дата добавления: <time itemprop="dateCreated" datetime="{{ faq.date_added|date:"Y-m-d" }}">{{ faq.date_added|date:"d.m.Y" }}</time></small>
+                </p>
+            </details>
+            <hr>
+            {% endfor %}
         </div>
     </div>
 
-    <script src="{% static 'js/navigation.js' %}"></script>
-</body>
-</html>
+    <video width="600" controls>
+        <source src="{% static 'videos/example.mp4' %}" type="video/mp4">
+        Ваш браузер не поддерживает тег видео.
+    </video>
+    
+    <object width="600" height="400" data="{% static 'videos/example.mp4' %}">
+        Ваш браузер не поддерживает отображение этого видео.
+    </object>
+    
+    <embed src="{% static 'videos/example.mp4' %}" width="600" height="400" type="video/mp4">
+
+    <iframe width="560" height="315" 
+        src="https://www.youtube.com/embed/XXYlFuWEuKI" 
+        title="YouTube video player">
+    </iframe>
+
+    <audio controls>
+        <source src="{% static "audio/audio.mp3" %}" type="audio/mpeg">
+    </audio>
+
+    <b id="1"><br>lorem ipsum dolor sit amet<br></br>
+    <em>lorem ipsum dolor sit amet<br></em>
+    <i>lorem ipsum dolor sit amet<br></i>
+    <s>lorem ipsum dolor sit amet<br></s>
+    <strong>lorem ipsum dolor sit amet<br></strong>
+    <u>lorem ipsum dolor sit amet<br></u>
+    <small>lorem ipsum dolor sit amet<br></small>
+    <sub>lorem ipsum dolor sit amet<br></sub>
+    <sup>lorem ipsum dolor sit amet<br></sup>
+
+    <p>
+        <code>
+          var fruits = ["apples", "oranges", "mangoes", "cherries"];<br>
+          document.writeln("I like " + fruits.length + " fruits");
+        </code>
+    </p>
+    <p>The variable in this example is <var>fruits</var></p>
+    <p>The output from the code is: <samp>I like 4 fruits</samp></p>
+    <p>When prompted for my favorite fruit, I typed: <kbd>cherries</kbd>
+    <br><br>
+    <abbr title="Florida Department of Citrus">FDOC</abbr>
+    <br><br>
+    <dfn title="apple">apple</dfn> 
+    <br><br>
+    <q cite="http://en.wikipedia.org/wiki/Apple">The apple is the pomaceous fruit of the apple tree.</q>
+    <p>My favorite book on fruit is <cite>Fruit: Edible, Inedible, Incredible</cite>.</p>
+    <br>
+    <blockquote cite="http://en.wikipedia.org/wiki/Apple">
+        The apple forms a tree that is small and deciduous, reaching 3 to 12 meters (9.8 to 39 ft) tall, with a broad, often densely twiggy crown.
+    </blockquote> 
+    <br>
+    <p>at <time datetime="15:00">3 o'clock</time> on <time datetime="1984-12-7">December 7th</time>.</p>
+    <br>
+    <p>I would like a <mark>pair</mark> of <mark>pears</mark></p>
+    <br>
+    <p>
+        I WANDERED lonely as a cloud<br>
+        That floats on high o'er vales and hills,<br>
+        When all at once I saw a crowd,<br>
+        A host, of <wbr>golden daffodils;
+    </p>
+    <br>
+    <pre>
+        I WANDERED lonely as a cloud
+        That floats on high o'er vales and hills,
+        When all at once I saw a crowd,
+        A host, of golden daffodils;
+    </pre>
+    
+    <a href="#1">якорь</a>
+    <br>
+    <a href="{% static 'docs/LR1 СТРВП.docx' %}" download>Документ</a>
+    <br><br>
+
+    <form action="#" method="post">
+        Имя:
+        <input type="text" name="username"><br>
+        Адрес эл. почты:
+        <input type="text" name="email"><br>
+        Пол:<br>
+        <input type="radio" name="sex" value="male">мужской<br>
+        <input type="radio" name="sex" value="female">женский<br>
+        <label for="fruits">Фрукты:</label>
+        <select id="fruits" name="fruits">
+            <optgroup label="Фрукты">
+                <option value="apple">Яблоко</option>
+                <option value="banana">Банан</option>
+                <option value="cherry">Вишня</option>
+                <option value="orange">Апельсин</option>
+                <option value="mango">Манго</option>
+            </optgroup>
+        </select>
+
+        <p>
+            Fruit: <input list="fruitlist" id="fave" name="fave" />
+        </p> 
+        <input type="submit" value="Отправить">
+        <input type="reset" value="Очистить">
+    </form>
+
+    <datalist id="fruitlist">
+        <option value="Apples" label="Lovely Apples" />
+        <option value="Oranges">Refreshing Oranges</option>
+        <option value="Cherries" />
+    </datalist>
+
+      
+      
+
+    <br>
+    <figure>
+        lorem ipsum
+        <figcaption>Это lorem ipsum</figcaption>
+    </figure>
+
+    <form>
+        <fieldset>
+          <legend>Choose your favorite monster</legend>
+      
+          <input type="radio" id="kraken" name="monster" value="K" />
+          <label for="kraken">Kraken</label><br />
+      
+          <input type="radio" id="sasquatch" name="monster" value="S" />
+          <label for="sasquatch">Sasquatch</label><br />
+      
+          <input type="radio" id="mothman" name="monster" value="M" />
+          <label for="mothman">Mothman</label>
+        </fieldset>
+      </form>
+
+      <table border="1">
+        <thead>
+            <tr>
+                <th>Название</th>
+                <th>Описание</th>
+                <th>Цена</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td rowspan="2">Продукт 1</td>
+                <td>Описание продукта 1, часть 1</td>
+                <td rowspan="2">$10</td>
+            </tr>
+            <tr>
+                <td>Описание продукта 1, часть 2</td>
+            </tr>
+            <tr>
+                <td>Продукт 2</td>
+                <td colspan="2">Описание и цена продукта 2</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <ol>
+        <li>point</li>
+        <li>point</li>
+        <li>point</li>
+    </ol>
+    <dl>
+        <dt>title1</dt>
+        <dd>definition1</dd> 
+        <dt>title2</dt>
+        <dd>definition2</dd> 
+        <dt>title3</dt>
+        <dd>definition3</dd> 
+    </dl>
+
+    <p>Термин <dfn title="HyperText Markup Language">HTML</dfn> означает HyperText Markup Language.</p>
+
+    
+    
+{% endblock %}

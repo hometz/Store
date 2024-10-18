@@ -1,45 +1,7 @@
-<!DOCTYPE html>
-{% load static %}
-<html lang="ru">
-<head>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Коммерческий отдел компании</title>
-    <link rel="stylesheet" href="{% static "css/styles.css" %}" />
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}Корзина{% endblock %}
 
-<div class="navbar">
-    <div class="left-items">
-        <a href="#" id="latest" class="tab">Главная</a>
-        <a href="#" id="about" class="tab">О нас</a>
-        <a href="#" id="news" class="tab">Новости</a>
-        <a href="#" id="faq" class="tab">FAQ</a>
-        <a href="#" id="contacts" class="tab">Контакты</a>
-        <a href="#" id="products" class="tab">Товары</a>
-        <a href="#" id="gif" class="tab">GIF</a>
-        <a href="#" id="rand" class="tab">Коты</a>
-        {% if user.is_staff %}
-            <a href="#" id="sales" class="tab">Продажи</a>
-        {% endif %}
-
-        {% if user.is_authenticated and not user.is_staff %}
-            <a href="#" id="cart" class="tab active">Корзина</a>
-        {% endif %}
-    </div>
-    {% if user.is_authenticated %}
-    <div class="sp">
-        <span>Привет, {{ user.username }}!</span>
-        <a href="/logout">Выйти</a>
-    </div>
-    {% else %}
-        <a href="/login">Войти</a>
-    {% endif %}
-</div>
-
+{% block content %}
 <h1>Ваша корзина</h1>
 
 <ul>
@@ -55,6 +17,14 @@
         x {{ cp.product.price|floatformat:2 }} руб. = 
         {{ cp.quantity|floatformat:2 }} x {{ cp.product.price|floatformat:2 }} руб.
         <a href="{% url 'buy_product' cp.product.id %}" class="btn btn-primary">Оплатить</a>
+        
+        <!-- Кнопка для удаления элемента из корзины -->
+        <form method="post" action="{% url 'cart_view' %}" style="display: inline;">
+            {% csrf_token %}
+            <input type="hidden" name="cart_product_id" value="{{ cp.id }}">
+            <input type="hidden" name="quantity" value="0">  <!-- Установка количества в 0 для удаления -->
+            <button type="submit" class="btn btn-danger">Удалить</button>
+        </form>
     </li>
     {% empty %}
     <li>Корзина пуста</li>
@@ -64,7 +34,4 @@
 <hr>
 
 <h3>Общая стоимость: {{ total_price|floatformat:2 }} руб.</h3>
-
-<script src="{% static 'js/navigation.js' %}"></script>
-</body>
-</html>
+{% endblock %}

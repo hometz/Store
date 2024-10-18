@@ -20,6 +20,7 @@ body {
 
 .left-items {
     display: flex;
+    align-items: center;
 }
 
 .user-info {
@@ -144,3 +145,33 @@ body {
     background-color: #e0e0e0;
     transform: translate(0px, 2px);
 }
+
+details {
+    margin-bottom: 15px;
+}
+
+summary {
+    font-weight: bold;
+    cursor: pointer;
+}
+
+summary::marker {
+    font-size: 1.5rem;
+}
+
+details[open] summary {
+    color: #007bff;
+}
+
+footer {
+    background-color :#ccc;
+    width: 100%; 
+    text-align: center;
+}
+
+.navbar-icon {
+    vertical-align: middle;
+    margin-right: 5px;
+    margin-left: 5px;
+}
+
