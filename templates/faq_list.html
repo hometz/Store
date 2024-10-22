@@ -32,7 +32,7 @@
     <embed src="{% static 'videos/example.mp4' %}" width="600" height="400" type="video/mp4">
 
     <iframe width="560" height="315" 
-        src="https://www.youtube.com/embed/XXYlFuWEuKI" 
+        src="https://en.wikipedia.org/wiki/IFrame" 
         title="YouTube video player">
     </iframe>
 
@@ -47,8 +47,9 @@
     <strong>lorem ipsum dolor sit amet<br></strong>
     <u>lorem ipsum dolor sit amet<br></u>
     <small>lorem ipsum dolor sit amet<br></small>
-    <sub>lorem ipsum dolor sit amet<br></sub>
-    <sup>lorem ipsum dolor sit amet<br></sup>
+    <p>Химическая формула воды: H<sub>2</sub>O</p>
+    <p>2<sup>2<sup>2<sup>2<sup>2<sup>2<sup>2</sup></sup></sup></sup></sup></sup> = ?</p>
+
 
     <p>
         <code>
@@ -96,14 +97,14 @@
 
     <form action="#" method="post">
         Имя:
-        <input type="text" name="username"><br>
+        <input type="text" name="username" required minlength="2" maxlength="50"><br>
         Адрес эл. почты:
-        <input type="text" name="email"><br>
+        <input type="email" name="email" required><br>
         Пол:<br>
-        <input type="radio" name="sex" value="male">мужской<br>
-        <input type="radio" name="sex" value="female">женский<br>
+        <input type="radio" name="sex" value="male" required>мужской<br>
+        <input type="radio" name="sex" value="female" required>женский<br>
         <label for="fruits">Фрукты:</label>
-        <select id="fruits" name="fruits">
+        <select id="fruits" name="fruits" required>
             <optgroup label="Фрукты">
                 <option value="apple">Яблоко</option>
                 <option value="banana">Банан</option>
@@ -112,22 +113,20 @@
                 <option value="mango">Манго</option>
             </optgroup>
         </select>
-
+    
         <p>
-            Fruit: <input list="fruitlist" id="fave" name="fave" />
+            Fruit: <input list="fruitlist" id="fave" name="fave" required />
         </p> 
         <input type="submit" value="Отправить">
         <input type="reset" value="Очистить">
     </form>
+    
 
     <datalist id="fruitlist">
         <option value="Apples" label="Lovely Apples" />
         <option value="Oranges">Refreshing Oranges</option>
         <option value="Cherries" />
     </datalist>
-
-      
-      
 
     <br>
     <figure>
