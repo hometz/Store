@@ -2,36 +2,38 @@
 {% block title %}Корзина{% endblock %}
 
 {% block content %}
-<h1>Ваша корзина</h1>
+<div class="container">
+    <h1>Ваша корзина</h1>
 
-<ul>
-    {% for cp in cart_products %}
-    <li>
-        {{ cp.product.name }} - 
-        <form method="post" action="{% url 'cart_view' %}" style="display: inline;">
-            {% csrf_token %}
-            <input type="number" name="quantity" value="{{ cp.quantity }}" min="1">
-            <input type="hidden" name="cart_product_id" value="{{ cp.id }}">
-            <button type="submit">Обновить</button>
-        </form>
-        x {{ cp.product.price|floatformat:2 }} руб. = 
-        {{ cp.quantity|floatformat:2 }} x {{ cp.product.price|floatformat:2 }} руб.
-        <a href="{% url 'buy_product' cp.product.id %}" class="btn btn-primary">Оплатить</a>
-        
-        <!-- Кнопка для удаления элемента из корзины -->
-        <form method="post" action="{% url 'cart_view' %}" style="display: inline;">
-            {% csrf_token %}
-            <input type="hidden" name="cart_product_id" value="{{ cp.id }}">
-            <input type="hidden" name="quantity" value="0">  <!-- Установка количества в 0 для удаления -->
-            <button type="submit" class="btn btn-danger">Удалить</button>
-        </form>
-    </li>
-    {% empty %}
-    <li>Корзина пуста</li>
-    {% endfor %}
-</ul>
+    <ul class="cart-list">
+        {% for cp in cart_products %}
+        <li class="cart-item">
+            <span class="product-name">{{ cp.product.name }}</span> - 
+            <form method="post" action="{% url 'cart_view' %}" class="update-form">
+                {% csrf_token %}
+                <input type="number" name="quantity" value="{{ cp.quantity }}" min="1" class="quantity-input">
+                <input type="hidden" name="cart_product_id" value="{{ cp.id }}">
+                <button type="submit" class="btn btn-secondary">Обновить</button>
+            </form>
+            x <span class="product-price">{{ cp.product.price|floatformat:2 }} руб.</span> = 
+            <span class="total-price">{{ cp.quantity|floatformat:2 }} x {{ cp.product.price|floatformat:2 }} руб.</span>
+            <a href="{% url 'buy_product' cp.product.id %}" class="btn btn-primary">Оплатить</a>
+            
+            <!-- Кнопка для удаления элемента из корзины -->
+            <form method="post" action="{% url 'cart_view' %}" class="delete-form">
+                {% csrf_token %}
+                <input type="hidden" name="cart_product_id" value="{{ cp.id }}">
+                <input type="hidden" name="quantity" value="0">  <!-- Установка количества в 0 для удаления -->
+                <button type="submit" class="btn btn-danger">Удалить</button>
+            </form>
+        </li>
+        {% empty %}
+        <li>Корзина пуста</li>
+        {% endfor %}
+    </ul>
 
-<hr>
+    <hr>
 
-<h3>Общая стоимость: {{ total_price|floatformat:2 }} руб.</h3>
+    <h3>Общая стоимость: <span class="total-price">{{ total_price|floatformat:2 }} руб.</span></h3>
+</div>
 {% endblock %}
