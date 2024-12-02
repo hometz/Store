@@ -9,7 +9,9 @@
                 <div class="article-summary">
                     <img src="{{ article.image.url }}" alt="{{ article.title }}">
                     <h2>{{ article.title }}</h2>
-                    <p>{{ article.summary }}</p>
+                    <div class="article-cont">
+                        <p>{{ article.summary }}</p>
+                    </div>
                     <a href="{% url 'article_detail' article.pk %}" class="read-more">Читать далее</a>
                 </div>
             {% endfor %}

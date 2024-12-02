@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Продажи{% endblock %}
+{% block content %}
+    <div class="container">
+        <h1>Добавление вакансий</h1>
+    <form>
+        <label for="profession">Профессия:</label><br>
+        <input type="text" id="profession"><br><br>
+
+        <label for="salary">Зарплата:</label><br>
+        <input type="number" id="salary"><br><br>
+
+        <label for="phone">Телефон:</label><br>
+        <input type="text" id="phone"><br><br>
+
+        <label for="location">Местоположение:</label><br>
+        <input type="text" id="location"><br><br>
+
+        <button type="button" id="add-vacancy-btn">Добавить вакансию</button>
+    </form>
+
+    <h2>Все вакансии:</h2>
+    <ul id="vacancy-list"></ul>
+
+    <h2>Самые высокооплачиваемые вакансии:</h2>
+    <button type="button" id="show-high-paid-jobs-btn">Показать высокооплачиваемые вакансии</button>
+
+    <h2>Вакансии по местоположению:</h2>
+    <input type="text" id="location-filter" placeholder="Введите местоположение">
+    <button type="button" id="show-vacancies-by-location-btn">Показать вакансии по местоположению</button>
+    
+    <div id="result"></div>
+    </div>
+{% endblock %}

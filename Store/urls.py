@@ -33,6 +33,7 @@ urlpatterns = [
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('products/', views.product_list, name='products_list'),
+    path('api/products/', views.product_list_api, name='product_list_api'),
     path('products/edit/<int:pk>', views.edit_product, name='edit_product'),
     path('products/delete/<int:pk>/', views.delete_product, name='delete_product'),
     path('products/create/', views.create_product, name='create_product'),
@@ -43,7 +44,9 @@ urlpatterns = [
     path('product/<int:product_id>/reviews/', views.product_reviews, name='product_reviews'),
     path('products/<int:product_id>/detail/', views.product_detail, name='product_detail'),
     path('cart/', views.cart_view, name='cart_view'),
-    path('cart/add/<int:product_id>/', views.add_to_cart, name='add_to_cart')
+    path('cart/add/<int:product_id>/', views.add_to_cart, name='add_to_cart'),
+    path('animation/', views.animation, name='animation'),
+    path('task/', views.task, name='task')
 ]
 
 if settings.DEBUG:

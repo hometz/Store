@@ -20,7 +20,31 @@
         </div>
     </div>
 
-    <article>
+    <div class="controls-container">
+        <label>
+            <input type="checkbox" id="toggleControls"> Показать настройки стиля
+        </label>
+
+        <div class="controls" id="controls">
+            <div>
+                <label for="fontSize">Размер шрифта:</label>
+                <input type="range" id="fontSize" min="10" max="30" value="16">
+            </div>
+            <div>
+                <label for="textColor">Цвет текста:</label>
+                <input type="color" id="textColor" value="#000000">
+            </div>
+            <div>
+                <label for="bgColor">Цвет фона:</label>
+                <input type="color" id="bgColor" value="#ffffff">
+            </div>
+        </div>
+
+        <p>Это пример текста для проверки изменения стиля страницы.</p>
+        <img class="img-container" src="https://via.placeholder.com/300" alt="Пример изображения">
+    </div>
+
+    <!--<article>
         <p>Это пример текста, где первая буква и первая строка абзаца выделены с помощью псевдоэлементов.</p>
     </article>
 
@@ -34,7 +58,104 @@
 
     <p>Выделите этот текст, чтобы увидеть изменение стиля.</p>
 
-    <!--<video width="600" controls>
+    <div class="cart">
+        <svg viewBox="0 0 200 200">
+          
+          <line class="part" x1="-50" y1="30" x2="50" y2="30"></line>
+          <line class="highlight" x1="-50" y1="30" x2="50" y2="30"></line>
+      
+          
+          <polyline class="part" points="50,30 30,100 130,100 160,50 50,50"></polyline>
+          <polyline class="highlight" points="50,30 30,100 130,100 160,50 50,50"></polyline>
+      
+          
+          <line class="part" x1="50" y1="50" x2="160" y2="50"></line>
+          <line class="highlight" x1="50" y1="50" x2="160" y2="50"></line>
+      
+          
+          <circle class="part" cx="40" cy="120" r="15"></circle>
+          <circle class="highlight" cx="40" cy="120" r="15"></circle>
+      
+          <circle class="part" cx="140" cy="120" r="15"></circle>
+          <circle class="highlight" cx="140" cy="120" r="15"></circle>
+        </svg>
+    </div>
+
+    <div class="text-container">
+        <h1 class="hd">Заголовок</h1>
+        <p class="first-line-indent">Это пример абзаца с красной строкой. <span class="small-caps">Этот текст оформлен капителью.</span> <span class="word-spacing">Интервал между словами увеличен.</span> <span class="letter-spacing">Интервал между символами увеличен.</span></p>
+        <p class="hyphenation">Этот текст демонстрирует автоматический перенос слов. Длинные слова будут переноситься на новую строку при необходимости.</p>
+        <p class="text-align">Этот текст выровнен по ширине. Все строки будут одинаковой длины, за исключением последней строки абзаца.</p>
+        <p class="positioning">Этот блок текста смещен относительно своего обычного положения.</p>
+    </div>
+
+    <div class="static">Static Position</div>
+    <div class="relative">Relative Position</div>
+    <div class="absolute">Absolute Position</div>
+    <div class="fixed">Fixed Position</div>
+    <p>aaaaaaaa</p>
+
+    <p class="kerning">Это пример текста с увеличенным кернингом.</p>
+    <p class="custom-font">Этот текст использует другой шрифт и уменьшенный кернинг.</p>
+
+    <div class="columns">
+        <p>Это пример текста, распределенного по нескольким колонкам.
+            Это пример текста, распределенного по нескольким колонкам.
+            Это пример текста, распределенного по нескольким колонкам.
+            Это пример текста, распределенного по нескольким колонкам.
+        </p>
+        <p>Это пример текста, распределенного по нескольким колонкам.
+            Это пример текста, распределенного по нескольким колонкам.
+            Это пример текста, распределенного по нескольким колонкам.
+            Это пример текста, распределенного по нескольким колонкам.
+        </p>
+    </div>
+
+    <div class="overflow">
+        Это пример текста, который может переполнять контейнер.Это пример текста, который может переполнять контейнер.
+    </div>
+
+    <div class="flexbox">
+        <div class="item">Элемент 1</div>
+        <div class="item">Элемент 2</div>
+        <div class="item">Элемент 3</div>
+    </div>
+
+    <div class="floating">
+        <div class="left">Левый блок</div>
+        <div class="right">Правый блок</div>
+        <div class="cnt">Основное содержимое</div>
+    </div>
+
+    <table class="custom-table">
+        <caption class="custom-caption">Заголовок таблицы</caption>
+        <thead>
+            <tr>
+                <th class="custom-th">Заголовок 1</th>
+                <th class="custom-th">Заголовок 2</th>
+                <th class="custom-th">Заголовок 3</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="custom-td">Ячейка 1</td>
+                <td class="custom-td">Ячейка 2</td>
+                <td class="custom-td">Ячейка 3</td>
+            </tr>
+            <tr>
+                <td class="custom-td">Ячейка 4</td>
+                <td class="custom-td"></td>
+                <td class="custom-td">Ячейка 6</td>
+            </tr>
+            <tr>
+                <td class="custom-td">Ячейка 7</td>
+                <td class="custom-td">Ячейка 8</td>
+                <td class="custom-td">Ячейка 9</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <video width="600" controls>
         <source src="{% static 'videos/example.mp4' %}" type="video/mp4">
         Ваш браузер не поддерживает тег видео.
     </video>

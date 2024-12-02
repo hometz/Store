@@ -10,6 +10,8 @@ import matplotlib.pyplot as plt
 import os
 from django.db.models import Sum
 from decimal import Decimal
+from django.core.paginator import Paginator
+from django.http import JsonResponse
 
 
 def get_random_gif():
@@ -43,10 +45,43 @@ def get_cat_fact():
         return None
 
 
+def animation(request):
+    return render(request, 'animation.html')
+
+def task(request):
+    return render(request, 'task.html')
 
 def product_list(request):
+    return render(request, 'product_list.html', {'user': request.user})
+
+def product_list_api(request):
     products = Product.objects.all()
-    return render(request, 'product_list.html', {'products': products, 'user': request.user})
+    paginator = Paginator(products, 4)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+
+    products_data = [
+        {
+            "id": product.id,
+            "name": product.name,
+            "unit": product.get_unit_display(),
+            "price": product.price,
+            "image": product.image.url if product.image else None,
+        }
+        for product in page_obj.object_list
+    ]
+
+    response = {
+        "products": products_data,
+        "has_previous": page_obj.has_previous(),
+        "has_next": page_obj.has_next(),
+        "previous_page_number": page_obj.previous_page_number() if page_obj.has_previous() else None,
+        "next_page_number": page_obj.next_page_number() if page_obj.has_next() else None,
+        "current_page": page_obj.number,
+        "total_pages": paginator.num_pages,
+    }
+
+    return JsonResponse(response)
 
 def product_detail(request, product_id):
     product = get_object_or_404(Product, pk=product_id)

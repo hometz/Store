@@ -9,15 +9,14 @@
     <meta name="author" content="Коммерческий отдел компании">
 
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-
     <link rel="stylesheet" href="{% static "css/styles.css" %}" />
 </head>
 <body>
 
 <header>
-    <nav class="navbar">
+    <nav class="navbar" id="navbar">
         <div class="left-items">
-            <img src="{% static 'images/Tesnina.png' %}" class="navbar-icon" width="40" height="40" tabindex="0">
+            <img src="{% static 'images/logo.jpg' %}" class="navbar-icon" width="40" height="40" tabindex="0">
             <a href="#" id="latest" class="tab" tabindex="1">Главная</a>
             <a href="#" id="about" class="tab" tabindex="2">О нас</a>
             <a href="#" id="news" class="tab" tabindex="3">Новости</a>
@@ -25,22 +24,43 @@
             <a href="#" id="contacts" class="tab" tabindex="5">Контакты</a>
             <a href="#" id="products" class="tab" tabindex="6">Товары</a>
             {% if user.is_staff %}
-                <a href="#" id="sales" class="tab" tabindex="7">Продажи</a>
+            <a href="#" id="sales" class="tab" tabindex="7">Продажи</a>
             {% endif %}
             {% if user.is_authenticated and not user.is_staff %}
-                <a href="#" id="cart" class="tab" tabindex="8">Корзина</a>
+            <a href="#" id="cart" class="tab" tabindex="8">Корзина</a>
             {% endif %}
         </div>
     
-        {% if user.is_authenticated %}
         <div class="user-info">
+            {% if user.is_authenticated %}
             <span>Привет, {{ user.username }}!</span>
             <a href="/logout">Выйти</a>
-        </div>
-        {% else %}
+            {% else %}
             <a href="/login">Войти</a>
-        {% endif %}
+            {% endif %}
+        </div>
+    
+        <button class="menu-toggle" aria-label="Toggle Menu">
+            ☰
+        </button>
     </nav>
+    
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="#" id="latest" class="tab">Главная</a>
+        <a href="#" id="about" class="tab">О нас</a>
+        <a href="#" id="news" class="tab">Новости</a>
+        <a href="#" id="faq" class="tab">FAQ</a>
+        <a href="#" id="contacts" class="tab">Контакты</a>
+        <a href="#" id="products" class="tab">Товары</a>
+        {% if user.is_staff %}
+        <a href="#" id="sales" class="tab">Продажи</a>
+        {% endif %}
+        {% if user.is_authenticated and not user.is_staff %}
+        <a href="#" id="cart" class="tab">Корзина</a>
+        {% endif %}
+    </div>
+    
+    
 </header>
 
 <main>
@@ -53,13 +73,13 @@
             <h2>Наши партнеры</h2>
             <div class="partner-logos">
                 <a target="_blank" href="https://svyatoyistochnik.com/">
-                    <img src="{% static 'images/saint.jpg' %}" alt="Святой Источник" width="100">
+                    <img src="{% static 'images/saint.jpg' %}" alt="Святой Источник" width="100" class="round-logo">
                 </a>
                 <a target="_blank" href="https://coca-cola.by/">
-                    <img src="{% static 'images/coke.jpg' %}" alt="Coca Cola" width="100">
+                    <img src="{% static 'images/coke.jpg' %}" alt="Coca Cola" width="100" class="round-logo">
                 </a>
                 <a target="_blank" href="https://market.yandex.ru/">
-                    <img src="{% static 'images/market.png' %}" alt="Яндекс Маркет" width="100">
+                    <img src="{% static 'images/market.png' %}" alt="Яндекс Маркет" width="100" class="round-logo">
                 </a>
             </div>
         </article>
@@ -70,10 +90,16 @@
                 <img src="{% static 'images/ads.jpg' %}" alt="Рекламный баннер" width="100">
             </div>
         </article>
+        <div id="countdown"></div>
     </section>
 </footer>
 
+<script src="{% static 'js/datecheck.js' %}"></script>
 <script src="{% static 'js/navigation.js' %}"></script>
+<script src="{% static 'js/slider.js' %}"></script>
+<script src="{% static 'js/countdown.js' %}"></script>
+<script src="{% static 'js/textcontrol.js' %}"></script>
+<script src="{% static 'js/task.js' %}"></script>
 
 </body>
 </html>

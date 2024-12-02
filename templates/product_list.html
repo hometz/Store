@@ -6,15 +6,17 @@
         {% if user.is_authenticated and user.is_staff %}
             <a class="edit" href="{% url 'create_product' %}" class="button">Добавить товар</a>
         {% endif %}
-        <div class="product_container">
-            {% for product in products %}
+        <div class="product_container" id="productContainer">
+            <!--{% for product in products %}
                 <div class="article-summary is_prod" data-product-id="{{ product.id }}">
+                    <img src="{{ product.image.url }}" alt="{{ product.title }}" width="250">
                     <h2>{{ product.name }}</h2>
                     <p>Единица измерения: {{ product.get_unit_display }}</p>
                     <p>Цена: {{ product.price }}</p>
                 </div>
-            {% endfor %}
+            {% endfor %}-->
         </div>
+        <div class="pag" id="pagination"></div>
         
     </div>
 {% endblock %}

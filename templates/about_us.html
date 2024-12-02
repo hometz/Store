@@ -1,5 +1,5 @@
 {% extends "base.html"%}
-
+{% load static %}
 {% block title %}О Компании{% endblock %}
 {% block content %}
 <div class="container">
@@ -8,11 +8,52 @@
         <h2>Информация о компании</h2>
         <p>Наша компания специализируется на продаже различных товаров через Интернет. Мы предлагаем широкий ассортимент продукции, включая товары для дома, электронику, одежду и многое другое. Мы стремимся предоставить нашим клиентам качественные товары по доступным ценам.</p>
         <h2>Логотип</h2>
-        <p>*** Логотип компании будет здесь ***</p>
+        <img src="{% static 'images/logo.jpg' %}" class="logo" width="100">
         <h2>История по годам</h2>
         <p>*** История компании по годам будет здесь ***</p>
         <h2>Реквизиты</h2>
         <p>*** Реквизиты компании будут здесь ***</p>
+        <div class="certificate">
+            <div class="content">
+                <h1>Сертификат</h1>
+                <p>Настоящим удостоверяется, что</p>
+                <div class="name">Сертификат выдан</div>
+                <p>отделом Сертификации</p>
+                <ul class="history">
+                    <li>2021 - Начало сертификации</li>
+                    <li>2022 - Завершение Сертификации</li>
+                </ul>
+                <div class="details">Реквизиты: ???</div>
+                <img src="{% static 'images/stamp.png' %}" alt="Печать" class="stamp">
+            </div>
+        </div>
     </div>
+
+    <div class="slider-container">
+      <div class="slide fade slide-active">
+          <div class="numbertext">1 / 3</div>
+          <img src="{% static 'images/coke.jpg' %}" width="100">
+          <div class="text">Caption Text 1</div>
+      </div>
+      <div class="slide fade slide-hide">
+          <div class="numbertext">2 / 3</div>
+          <img src="{% static 'images/logo.jpg' %}">
+          <div class="text">Caption Text 2</div>
+      </div>
+      <div class="slide fade slide-hide">
+          <div class="numbertext">3 / 3</div>
+          <img src="{% static 'images/saint.jpg' %}">
+          <div class="text">Caption Text 3</div>
+      </div>
+      <a class="prev">❮</a>
+      <a class="next">❯</a>
+  </div>
+  <br>
+  <div class="pagination">
+      <span class="dot dot-active" id="dot_1"></span>
+      <span class="dot" id="dot_2"></span>
+      <span class="dot" id="dot_3"></span>
+  </div>
+  
 </div>
 {% endblock %}

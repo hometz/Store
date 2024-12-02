@@ -1,25 +1,27 @@
 {% extends "base.html" %}
 {% block title %}Список кадров{% endblock %}
 {% block content %}
-    <h1>Контакты</h1>
-    <table>
-        <tr>
-            <th>Фото</th>
-            <th>Имя</th>
-            <th>Описание работы</th>
-            <th>Телефон</th>
-            <th>Email</th>
-        </tr>
-        {% for employee in employees %}
-        <div class="container">
+    <div class="container">
+        <h1>Контакты</h1>
+        <table>
             <tr>
-                <td><img src="{{ employee.photo.url }}" alt="{{ employee.name }}" width="100"></td>
-                <td>{{ employee.name }}</td>
-                <td>{{ employee.job_description }}</td>
-                <td>{{ employee.phone }}</td>
-                <td>{{ employee.email }}</td>
+                <th>Фото</th>
+                <th>Имя</th>
+                <th>Описание работы</th>
+                <th>Телефон</th>
+                <th>Email</th>
             </tr>
-        </div>
-        {% endfor %}
-    </table>
+            {% for employee in employees %}
+            <div>
+                <tr>
+                    <td><img src="{{ employee.photo.url }}" alt="{{ employee.name }}" width="100"></td>
+                    <td>{{ employee.name }}</td>
+                    <td>{{ employee.job_description }}</td>
+                    <td>{{ employee.phone }}</td>
+                    <td>{{ employee.email }}</td>
+                </tr>
+            </div>
+            {% endfor %}
+        </table>
+    </div>
 {% endblock %}
