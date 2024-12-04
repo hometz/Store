@@ -1,23 +1,127 @@
-<!DOCTYPE html>
 {% load static %}
-<html lang="ru">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static "css/styles.css" %}" />
-</head>
-<body class="bdy">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scroll Animation</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 300vh; /* Высота страницы для демонстрации скроллинга */
+      background: linear-gradient(to bottom, #f0f8ff, #ffe4e1);
+      font-family: Arial, sans-serif;
+      overflow-x: hidden;
+    }
 
-    <div class="scene">
-        <div class="cloud"></div>
-        <div class="basket">
-          <div class="prd"></div>
-          <div class="prd"></div>
-          <div class="prd"></div>
-        </div>
-        <div class="lawn"></div>
-        <div class="house"></div>
-        <div class="company-name">Название компании</div>
-    </div>
+    .cart {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 80px;
+      height: 80px;
+      background: #ff6f61;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      color: white;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .item {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 40px;
+      background: #ffd700;
+      border-radius: 50%;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      animation: none;
+    }
+
+    @keyframes fall {
+      from {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(-50%) translateY(calc(100vh - 120px));
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="cart">🛒</div>
+
+  <script>
+    const cart = document.querySelector('.cart');
+    let lastScrollY = 0;
+    let itemCount = 0;
+
+    // Функция для создания товара
+    function createItem() {
+        const item = document.createElement('div');
+        item.classList.add('item');
+        item.style.left = `${Math.random() * 80 + 10}%`; // Генерируем случайное положение по горизонтали
+        
+        // Создаем элемент <img> и задаем атрибут src
+        const img = document.createElement('img');
+        img.src = "{% static 'images/gift.png' %}";  // Путь к картинке
+        img.width = 75;
+        
+        // Добавляем <img> в элемент item
+        item.appendChild(img);
+        
+        // Добавляем элемент item на страницу
+        document.body.appendChild(item);
+        
+
+      // Анимация падения товара
+      const animationDuration = 1000; // Длительность анимации (в мс)
+      item.animate(
+        [
+          { transform: `translateY(0px)`, opacity: 1 },
+          { transform: `translateY(calc(100vh - 120px))`, opacity: 0 }
+        ],
+        {
+          duration: animationDuration,
+          easing: 'ease-in'
+        }
+      );
+
+      // Удаление товара после анимации
+      setTimeout(() => {
+        item.remove();
+      }, animationDuration);
+    }
+
+    // Обработчик событий прокрутки
+    window.addEventListener('scroll', () => {
+      const scrollY = window.scrollY;
+
+      // Проверяем направление скроллинга
+      if (scrollY > lastScrollY && scrollY % 100 < 50) {
+        // Скроллинг вниз
+        createItem();
+        itemCount++;
+      } else if (scrollY < lastScrollY && scrollY % 100 < 50) {
+        // Скроллинг вверх
+        createItem();
+        itemCount--;
+      }
+
+      lastScrollY = scrollY;
+
+      // Обновляем текст корзины
+      cart.textContent = `🛒 ${Math.max(itemCount, 0)}`;
+    });
+  </script>
 </body>
 </html>
