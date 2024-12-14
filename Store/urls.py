@@ -29,6 +29,7 @@ urlpatterns = [
     path('news/<int:pk>/', views.article_detail, name='article_detail'),
     path('faq/', views.faq_list, name='faq_list'),
     path('contacts/', views.contact_list, name='contact_list'),
+    path('api/employees/', views.employee_list_api, name='employee-list-api'),
     path('register/', views.register_view, name='register'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),

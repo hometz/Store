@@ -1,27 +1,264 @@
 {% extends "base.html" %}
 {% block title %}Список кадров{% endblock %}
 {% block content %}
-    <div class="container">
-        <h1>Контакты</h1>
-        <table>
-            <tr>
-                <th>Фото</th>
-                <th>Имя</th>
-                <th>Описание работы</th>
-                <th>Телефон</th>
-                <th>Email</th>
-            </tr>
-            {% for employee in employees %}
-            <div>
-                <tr>
-                    <td><img src="{{ employee.photo.url }}" alt="{{ employee.name }}" width="100"></td>
-                    <td>{{ employee.name }}</td>
-                    <td>{{ employee.job_description }}</td>
-                    <td>{{ employee.phone }}</td>
-                    <td>{{ employee.email }}</td>
-                </tr>
-            </div>
-            {% endfor %}
-        </table>
+<div class="container">
+    <h1>Контакты</h1>
+
+    <!-- Прелоадер -->
+    <div id="preloader" style="display: none;">
+        <p>Загрузка...</p>
     </div>
+
+    <!-- Фильтрация -->
+    <div class="filter">
+        <input type="text" id="filterInput" placeholder="Введите текст для фильтрации">
+        <button id="filterButton">Найти</button>
+    </div>
+
+    <!-- Кнопка добавления -->
+    <button id="addEmployeeButton">Добавить</button>
+
+    <!-- Форма добавления сотрудника -->
+    <div id="addEmployeeForm" style="display: none; margin-top: 20px;">
+        <h3>Добавить сотрудника</h3>
+        <form id="employeeForm">
+            <label for="name">ФИО:</label>
+            <input type="text" id="name" name="name" required><br>
+
+            <label for="photo">Фото (URL):</label>
+            <input type="text" id="photo" name="photo" required><br>
+            <span id="photoValidation" class="validation"></span>
+
+            <label for="jobDescription">Описание работы:</label>
+            <textarea id="jobDescription" name="jobDescription" required></textarea><br>
+
+            <label for="phone">Телефон:</label>
+            <input type="text" id="phone" name="phone" required><br>
+            <span id="phoneValidation" class="validation"></span>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required><br>
+
+            <button type="button" id="addToTableButton" disabled>Добавить в таблицу</button>
+        </form>
+    </div>
+
+    <table id="employeeTable" style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+        <thead>
+            <tr>
+                <th data-column="photo">Фото</th>
+                <th data-column="name">Имя</th>
+                <th data-column="job_description">Описание работы</th>
+                <th data-column="phone">Телефон</th>
+                <th data-column="email">Email</th>
+                <th>Выбрать</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Данные загружаются с сервера -->
+        </tbody>
+    </table>
+
+    <div id="pagination" style="margin-top: 20px;">
+        <button id="prevPage">Назад</button>
+        <span id="currentPage">1</span>
+        <button id="nextPage">Вперед</button>
+    </div>
+
+    <div id="selectedEmployee" style="margin-top: 20px;">
+        <h3>Информация о выбранной строке:</h3>
+        <p id="employeeInfo"></p>
+    </div>
+
+    <button id="rewardButton">Премировать</button>
+    <div id="rewardText" style="margin-top: 20px;"></div>
+
+</div>
+
+<style>
+    table, th, td {
+        border: 1px solid black;
+        padding: 8px;
+        text-align: left;
+    }
+    th {
+        cursor: pointer;
+    }
+    .validation {
+        color: red;
+        font-size: 12px;
+    }
+    #preloader {
+        text-align: center;
+        font-size: 18px;
+        font-weight: bold;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        let employees = [];
+        let filteredEmployees = [];
+        let currentPage = 1;
+        const rowsPerPage = 3;
+        let sortDirection = {};и
+
+        function validateUrl(url) {
+            const regex = /^(https?:\/\/).+\.(php|html)$/;
+            return regex.test(url);
+        }
+
+        function validatePhone(phone) {
+            const regex = /^(8|(\+375))\s?(\(\d{2}\)|\d{2})\s?\d{3}[-\s]?\d{2}[-\s]?\d{2}$/;
+            return regex.test(phone);
+        }
+
+        function loadEmployees() {
+            showPreloader();
+            fetch('/api/employees') 
+                .then(response => response.json())
+                .then(data => {
+                    employees = data;
+                    filteredEmployees = [...employees];
+                    renderTable();
+                    hidePreloader();
+                });
+        }
+
+        // Отображение прелоадера
+        function showPreloader() {
+            document.getElementById('preloader').style.display = 'block';
+        }
+
+        // Скрытие прелоадера
+        function hidePreloader() {
+            document.getElementById('preloader').style.display = 'none';
+        }
+
+        // Отрисовка таблицы
+        function renderTable() {
+            const tbody = document.querySelector('#employeeTable tbody');
+            tbody.innerHTML = '';
+
+            const start = (currentPage - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+            const pageEmployees = filteredEmployees.slice(start, end);
+
+            pageEmployees.forEach(employee => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><img src="${employee.photo}" alt="${employee.name}" width="50"></td>
+                    <td>${employee.name}</td>
+                    <td>${employee.job_description}</td>
+                    <td>${employee.phone}</td>
+                    <td>${employee.email}</td>
+                    <td><input type="checkbox" class="selectEmployee"></td>
+                `;
+                row.addEventListener('click', () => {
+                    document.getElementById('employeeInfo').innerText = `
+                        Имя: ${employee.name}
+                        Описание работы: ${employee.job_description}
+                        Телефон: ${employee.phone}
+                        Email: ${employee.email}
+                    `;
+                });
+                tbody.appendChild(row);
+            });
+        }
+
+        // Сортировка
+        document.querySelectorAll('th[data-column]').forEach(th => {
+            th.addEventListener('click', () => {
+                const column = th.getAttribute('data-column');
+                sortDirection[column] = !sortDirection[column];
+                filteredEmployees.sort((a, b) => {
+                    if (a[column] > b[column]) return sortDirection[column] ? 1 : -1;
+                    if (a[column] < b[column]) return sortDirection[column] ? -1 : 1;
+                    return 0;
+                });
+                renderTable();
+            });
+        });
+
+        // Фильтрация
+        document.getElementById('filterButton').addEventListener('click', () => {
+            const query = document.getElementById('filterInput').value.toLowerCase();
+            filteredEmployees = employees.filter(employee => {
+                return Object.values(employee).some(val =>
+                    String(val).toLowerCase().includes(query)
+                );
+            });
+            currentPage = 1;
+            renderTable();
+        });
+
+        // Пагинация
+        document.getElementById('prevPage').addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderTable();
+            }
+        });
+
+        document.getElementById('nextPage').addEventListener('click', () => {
+            if (currentPage < Math.ceil(filteredEmployees.length / rowsPerPage)) {
+                currentPage++;
+                renderTable();
+            }
+        });
+
+        // Добавление сотрудника
+        document.getElementById('addEmployeeButton').addEventListener('click', () => {
+            const form = document.getElementById('addEmployeeForm');
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        });
+
+        document.getElementById('employeeForm').addEventListener('input', () => {
+            const photo = document.getElementById('photo').value;
+            const phone = document.getElementById('phone').value;
+
+            const isPhotoValid = validateUrl(photo);
+            const isPhoneValid = validatePhone(phone);
+
+            document.getElementById('photoValidation').innerText = isPhotoValid ? '' : 'Некорректный URL';
+            document.getElementById('phoneValidation').innerText = isPhoneValid ? '' : 'Некорректный телефон';
+
+            document.getElementById('addToTableButton').disabled = !(isPhotoValid && isPhoneValid);
+        });
+
+        document.getElementById('addToTableButton').addEventListener('click', () => {
+            const name = document.getElementById('name').value;
+            const photo = document.getElementById('photo').value;
+            const jobDescription = document.getElementById('jobDescription').value;
+            const phone = document.getElementById('phone').value;
+            const email = document.getElementById('email').value;
+
+            const newEmployee = { name, photo, job_description: jobDescription, phone, email };
+            employees.push(newEmployee);
+            filteredEmployees = [...employees];
+            renderTable();
+
+            document.getElementById('employeeForm').reset();
+            document.getElementById('addEmployeeForm').style.display = 'none';
+        });
+
+        // Премирование
+        document.getElementById('rewardButton').addEventListener('click', () => {
+            const selectedEmployees = [];
+            document.querySelectorAll('.selectEmployee:checked').forEach(checkbox => {
+                const row = checkbox.closest('tr');
+                const name = row.children[1].innerText;
+                selectedEmployees.push(name);
+            });
+
+            const rewardText = selectedEmployees.length
+                ? `Премированы сотрудники: ${selectedEmployees.join(', ')}`
+                : 'Не выбраны сотрудники для премирования';
+            document.getElementById('rewardText').innerText = rewardText;
+        });
+
+        // Инициализация
+        loadEmployees();
+    });
+</script>
 {% endblock %}

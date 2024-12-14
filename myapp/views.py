@@ -233,6 +233,38 @@ def contact_list(request):
     employees = Employee.objects.all()
     return render(request, 'contact_list.html', {'employees': employees, 'user': request.user})
 
+def employee_list_api(request):
+    employees = Employee.objects.all()
+
+   
+    paginator = Paginator(employees, 4)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+
+    employees_data = [
+        {
+            "id": employee.id,
+            "name": employee.name,
+            "photo": employee.photo.url if employee.photo else None,
+            "job_description": employee.job_description,
+            "phone": employee.phone,
+            "email": employee.email,
+        }
+        for employee in page_obj.object_list
+    ]
+
+    response = {
+        "employees": employees_data,
+        "has_previous": page_obj.has_previous(),
+        "has_next": page_obj.has_next(),
+        "previous_page_number": page_obj.previous_page_number() if page_obj.has_previous() else None,
+        "next_page_number": page_obj.next_page_number() if page_obj.has_next() else None,
+        "current_page": page_obj.number,
+        "total_pages": paginator.num_pages,
+    }
+
+    return JsonResponse(response)
+
 def register_view(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
