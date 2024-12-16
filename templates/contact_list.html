@@ -10,13 +10,13 @@
     </div>
 
     <!-- Фильтрация -->
-    <div class="filter">
-        <input type="text" id="filterInput" placeholder="Введите текст для фильтрации">
+    <div class="filter" style="margin-bottom: 20px;">
+        <input type="text" id="filterInput" placeholder="Введите текст для фильтрации" />
         <button id="filterButton">Найти</button>
     </div>
 
-    <!-- Кнопка добавления -->
-    <button id="addEmployeeButton">Добавить</button>
+    <!-- Кнопка добавления сотрудника -->
+    <button id="showAddFormButton">Добавить сотрудника</button>
 
     <!-- Форма добавления сотрудника -->
     <div id="addEmployeeForm" style="display: none; margin-top: 20px;">
@@ -27,14 +27,14 @@
 
             <label for="photo">Фото (URL):</label>
             <input type="text" id="photo" name="photo" required><br>
-            <span id="photoValidation" class="validation"></span>
+            <span id="photoValidation" class="validation" style="color: red;"></span><br>
 
             <label for="jobDescription">Описание работы:</label>
             <textarea id="jobDescription" name="jobDescription" required></textarea><br>
 
             <label for="phone">Телефон:</label>
             <input type="text" id="phone" name="phone" required><br>
-            <span id="phoneValidation" class="validation"></span>
+            <span id="phoneValidation" class="validation" style="color: red;"></span><br>
 
             <label for="email">Email:</label>
             <input type="email" id="email" name="email" required><br>
@@ -43,6 +43,7 @@
         </form>
     </div>
 
+    <!-- Таблица с данными сотрудников -->
     <table id="employeeTable" style="width: 100%; border-collapse: collapse; margin-top: 20px;">
         <thead>
             <tr>
@@ -55,25 +56,28 @@
             </tr>
         </thead>
         <tbody>
-            <!-- Данные загружаются с сервера -->
+            <!-- Данные загружаются с сервера или добавляются локально -->
         </tbody>
     </table>
 
+    <!-- Пагинация -->
     <div id="pagination" style="margin-top: 20px;">
         <button id="prevPage">Назад</button>
         <span id="currentPage">1</span>
         <button id="nextPage">Вперед</button>
     </div>
 
+    <!-- Информация о выбранном сотруднике -->
     <div id="selectedEmployee" style="margin-top: 20px;">
         <h3>Информация о выбранной строке:</h3>
         <p id="employeeInfo"></p>
     </div>
 
+    <!-- Кнопка для премирования сотрудников -->
     <button id="rewardButton">Премировать</button>
     <div id="rewardText" style="margin-top: 20px;"></div>
-
 </div>
+
 
 <style>
     table, th, td {
@@ -98,58 +102,53 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         let employees = [];
-        let filteredEmployees = [];
         let currentPage = 1;
-        const rowsPerPage = 3;
-        let sortDirection = {};и
-
-        function validateUrl(url) {
-            const regex = /^(https?:\/\/).+\.(php|html)$/;
-            return regex.test(url);
-        }
-
-        function validatePhone(phone) {
-            const regex = /^(8|(\+375))\s?(\(\d{2}\)|\d{2})\s?\d{3}[-\s]?\d{2}[-\s]?\d{2}$/;
-            return regex.test(phone);
-        }
-
-        function loadEmployees() {
+        const rowsPerPage = 4;
+    
+        // Функция загрузки сотрудников
+        function loadEmployees(page = 1) {
             showPreloader();
-            fetch('/api/employees') 
-                .then(response => response.json())
+            fetch(`/api/employees?page=${page}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Ошибка загрузки данных');
+                    }
+                    return response.json();
+                })
                 .then(data => {
-                    employees = data;
-                    filteredEmployees = [...employees];
+                    employees = data.employees;
+                    currentPage = data.current_page;
                     renderTable();
+                    updatePagination(data);
+                    hidePreloader();
+                })
+                .catch(error => {
+                    console.error('Ошибка:', error);
                     hidePreloader();
                 });
         }
-
+    
         // Отображение прелоадера
         function showPreloader() {
             document.getElementById('preloader').style.display = 'block';
         }
-
+    
         // Скрытие прелоадера
         function hidePreloader() {
             document.getElementById('preloader').style.display = 'none';
         }
-
+    
         // Отрисовка таблицы
         function renderTable() {
             const tbody = document.querySelector('#employeeTable tbody');
             tbody.innerHTML = '';
-
-            const start = (currentPage - 1) * rowsPerPage;
-            const end = start + rowsPerPage;
-            const pageEmployees = filteredEmployees.slice(start, end);
-
-            pageEmployees.forEach(employee => {
+    
+            employees.forEach(employee => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td><img src="${employee.photo}" alt="${employee.name}" width="50"></td>
                     <td>${employee.name}</td>
-                    <td>${employee.job_description}</td>
+                    <td>${employee.job_description.replace(/\r?\n/g, '<br>')}</td>
                     <td>${employee.phone}</td>
                     <td>${employee.email}</td>
                     <td><input type="checkbox" class="selectEmployee"></td>
@@ -165,100 +164,116 @@
                 tbody.appendChild(row);
             });
         }
-
-        // Сортировка
-        document.querySelectorAll('th[data-column]').forEach(th => {
-            th.addEventListener('click', () => {
-                const column = th.getAttribute('data-column');
-                sortDirection[column] = !sortDirection[column];
-                filteredEmployees.sort((a, b) => {
-                    if (a[column] > b[column]) return sortDirection[column] ? 1 : -1;
-                    if (a[column] < b[column]) return sortDirection[column] ? -1 : 1;
-                    return 0;
-                });
-                renderTable();
-            });
-        });
-
-        // Фильтрация
-        document.getElementById('filterButton').addEventListener('click', () => {
-            const query = document.getElementById('filterInput').value.toLowerCase();
-            filteredEmployees = employees.filter(employee => {
-                return Object.values(employee).some(val =>
-                    String(val).toLowerCase().includes(query)
-                );
-            });
-            currentPage = 1;
-            renderTable();
-        });
-
-        // Пагинация
-        document.getElementById('prevPage').addEventListener('click', () => {
-            if (currentPage > 1) {
-                currentPage--;
-                renderTable();
-            }
-        });
-
-        document.getElementById('nextPage').addEventListener('click', () => {
-            if (currentPage < Math.ceil(filteredEmployees.length / rowsPerPage)) {
-                currentPage++;
-                renderTable();
-            }
-        });
-
-        // Добавление сотрудника
-        document.getElementById('addEmployeeButton').addEventListener('click', () => {
-            const form = document.getElementById('addEmployeeForm');
-            form.style.display = form.style.display === 'none' ? 'block' : 'none';
-        });
-
-        document.getElementById('employeeForm').addEventListener('input', () => {
-            const photo = document.getElementById('photo').value;
-            const phone = document.getElementById('phone').value;
-
-            const isPhotoValid = validateUrl(photo);
-            const isPhoneValid = validatePhone(phone);
-
-            document.getElementById('photoValidation').innerText = isPhotoValid ? '' : 'Некорректный URL';
-            document.getElementById('phoneValidation').innerText = isPhoneValid ? '' : 'Некорректный телефон';
-
-            document.getElementById('addToTableButton').disabled = !(isPhotoValid && isPhoneValid);
-        });
-
-        document.getElementById('addToTableButton').addEventListener('click', () => {
+    
+        // Обновление пагинации
+        function updatePagination(data) {
+            const prevButton = document.getElementById('prevPage');
+            const nextButton = document.getElementById('nextPage');
+            const currentPageSpan = document.getElementById('currentPage');
+    
+            prevButton.disabled = !data.has_previous;
+            nextButton.disabled = !data.has_next;
+            currentPageSpan.textContent = `Страница ${data.current_page} из ${data.total_pages}`;
+    
+            prevButton.onclick = () => {
+                if (data.has_previous) loadEmployees(data.previous_page_number);
+            };
+    
+            nextButton.onclick = () => {
+                if (data.has_next) loadEmployees(data.next_page_number);
+            };
+        }
+    
+        // Валидация телефонного номера
+        function validatePhone(phone) {
+            const phonePattern = /^(8|\+375)(\s?\(\d{3}\)\s?|\s?\d{3}\s?)(\d{3}|\d{4})([\s\-]?\d{2}|\d{3})([\s\-]?\d{2}|\d{3})$/;
+            return phonePattern.test(phone);
+        }
+    
+        // Валидация URL фото
+        function validatePhoto(photo) {
+            const photoPattern = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif|bmp))/i;
+            return photoPattern.test(photo);
+        }
+    
+        // Валидация формы
+        function validateForm() {
             const name = document.getElementById('name').value;
             const photo = document.getElementById('photo').value;
             const jobDescription = document.getElementById('jobDescription').value;
             const phone = document.getElementById('phone').value;
             const email = document.getElementById('email').value;
-
-            const newEmployee = { name, photo, job_description: jobDescription, phone, email };
+    
+            let valid = true;
+    
+            if (!name || !jobDescription || !email) {
+                valid = false;
+            }
+    
+            if (!validatePhone(phone)) {
+                document.getElementById('phoneValidation').innerText = 'Неверный формат телефона';
+                valid = false;
+            } else {
+                document.getElementById('phoneValidation').innerText = '';
+            }
+    
+            if (!validatePhoto(photo)) {
+                document.getElementById('photoValidation').innerText = 'Неверный формат URL фото';
+                valid = false;
+            } else {
+                document.getElementById('photoValidation').innerText = '';
+            }
+    
+            document.getElementById('addToTableButton').disabled = !valid;
+        }
+    
+        // Добавление локального сотрудника в таблицу
+        function addLocalEmployee() {
+            const name = document.getElementById('name').value;
+            const photo = document.getElementById('photo').value;
+            const jobDescription = document.getElementById('jobDescription').value;
+            const phone = document.getElementById('phone').value;
+            const email = document.getElementById('email').value;
+    
+            const newEmployee = {
+                name,
+                photo,
+                job_description: jobDescription,
+                phone,
+                email
+            };
+    
+            // Добавляем нового сотрудника в массив
             employees.push(newEmployee);
-            filteredEmployees = [...employees];
+    
+            // Обновляем таблицу
             renderTable();
-
+    
+            // Сбрасываем форму
             document.getElementById('employeeForm').reset();
             document.getElementById('addEmployeeForm').style.display = 'none';
+    
+            // Блокируем кнопку после добавления
+            document.getElementById('addToTableButton').disabled = true;
+        }
+    
+        // Слушаем изменения в форме для валидации
+        document.getElementById('employeeForm').addEventListener('input', validateForm);
+    
+        // Открытие формы добавления сотрудника
+        document.getElementById('showAddFormButton').addEventListener('click', () => {
+            document.getElementById('addEmployeeForm').style.display = 'block';
         });
-
-        // Премирование
-        document.getElementById('rewardButton').addEventListener('click', () => {
-            const selectedEmployees = [];
-            document.querySelectorAll('.selectEmployee:checked').forEach(checkbox => {
-                const row = checkbox.closest('tr');
-                const name = row.children[1].innerText;
-                selectedEmployees.push(name);
-            });
-
-            const rewardText = selectedEmployees.length
-                ? `Премированы сотрудники: ${selectedEmployees.join(', ')}`
-                : 'Не выбраны сотрудники для премирования';
-            document.getElementById('rewardText').innerText = rewardText;
-        });
-
+    
         // Инициализация
         loadEmployees();
+    
+        // Обработчик кнопки "Добавить в таблицу"
+        document.getElementById('addToTableButton').addEventListener('click', addLocalEmployee);
     });
+    
+    
 </script>
+
+
 {% endblock %}
